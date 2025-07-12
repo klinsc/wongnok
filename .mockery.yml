@@ -11,7 +11,7 @@ require-template-schema-exists: true
 template: testify
 template-schema: "{{.Template}}.schema.json"
 packages:
-  wongnok:
+  github.com/klins/devpool/go-day6/wongnok:
     config:
       all: true
       recursive: true
