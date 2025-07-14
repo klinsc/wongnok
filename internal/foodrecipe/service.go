@@ -12,6 +12,8 @@ type IService interface {
 	Create(request dto.FoodRecipeRequest) (model.FoodRecipe, error)
 	GetByID(id string) (model.FoodRecipe, error)
 	GetAll() ([]model.FoodRecipe, error)
+	Get() (model.FoodRecipes, int64, error)
+	Count() (int64, error)
 }
 
 type Service struct {
@@ -56,4 +58,28 @@ func (service Service) GetAll() ([]model.FoodRecipe, error) {
 	}
 
 	return recipes, nil
+}
+
+func (service Service) Get() (model.FoodRecipes, int64, error) {
+	// Call the repository method to get recipes and total count
+	recipes, err := service.Repository.Get()
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "get recipes")
+	}
+
+	// Return the recipes and get the total count
+	total, err := service.Repository.Count()
+	if err != nil {
+		return nil, 0, errors.Wrap(err, "count recipes")
+	}
+
+	return recipes, total, nil
+}
+
+func (service Service) Count() (int64, error) {
+	count, err := service.Repository.Count()
+	if err != nil {
+		return 0, errors.Wrap(err, "count recipes")
+	}
+	return count, nil
 }

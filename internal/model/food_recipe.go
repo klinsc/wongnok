@@ -50,3 +50,18 @@ func (recipe FoodRecipe) ToResponse() dto.FoodRecipeResponse {
 		UpdatedAt: recipe.UpdatedAt,
 	}
 }
+
+type FoodRecipes []FoodRecipe
+
+func (recipes FoodRecipes) ToResponse() dto.FoodRecipesResponse {
+	var result = make([]dto.FoodRecipeResponse, 0)
+
+	for _, recipe := range recipes {
+		result = append(result, recipe.ToResponse())
+	}
+
+	return dto.FoodRecipesResponse{
+		Total:   int64(len(recipes)),
+		Results: make([]dto.FoodRecipeResponse, len(recipes)),
+	}
+}

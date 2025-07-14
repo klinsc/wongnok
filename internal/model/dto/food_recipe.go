@@ -1,6 +1,9 @@
 package dto
 
-import "time"
+import (
+	"time"
+	// "github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
+)
 
 type FoodRecipeRequest struct {
 	Name              string
@@ -24,3 +27,6 @@ type FoodRecipeResponse struct {
 	CreatedAt       time.Time               `json:"createdAt"`
 	UpdatedAt       time.Time               `json:"updatedAt"`
 }
+
+// type FoodRecipesResponse dto.BaseListResponse[[]FoodRecipeResponse]
+type FoodRecipesResponse BaseListResponse[[]FoodRecipeResponse]

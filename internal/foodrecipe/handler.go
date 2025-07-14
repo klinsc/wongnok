@@ -12,6 +12,7 @@ import (
 
 type IHandler interface {
 	Create(ctx *gin.Context)
+	Get(ctx *gin.Context)
 }
 
 type Handler struct {
@@ -78,4 +79,14 @@ func (handler Handler) GetAll(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, response)
+}
+
+func (handler Handler) Get(ctx *gin.Context) {
+	recipes, _, err := handler.Service.Get()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, recipes.ToResponse())
 }

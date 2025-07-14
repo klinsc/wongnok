@@ -10,6 +10,8 @@ type IRepository interface {
 	Create(recipe *model.FoodRecipe) error
 	GetByID(id string) (model.FoodRecipe, error)
 	GetAll() ([]model.FoodRecipe, error)
+	Get() (model.FoodRecipes, error)
+	Count() (int64, error)
 }
 
 type Repository struct {
@@ -36,4 +38,21 @@ func (repo Repository) GetAll() ([]model.FoodRecipe, error) {
 	var recipes []model.FoodRecipe
 	err := repo.DB.Preload(clause.Associations).Find(&recipes).Error
 	return recipes, err
+}
+
+func (repo Repository) Get() (model.FoodRecipes, error) {
+	var recipes = make(model.FoodRecipes, 0)
+
+	err := repo.DB.Preload(clause.Associations).Find(&recipes).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return recipes, nil
+}
+
+func (repo Repository) Count() (int64, error) {
+	var count int64
+	err := repo.DB.Model(&model.FoodRecipe{}).Count(&count).Error
+	return count, err
 }
