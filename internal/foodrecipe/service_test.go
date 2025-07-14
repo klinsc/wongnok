@@ -104,17 +104,29 @@ func (suite *ServiceCreateTestSuite) TestErrorWhenRequestValidate() {
 func (suite *ServiceCreateTestSuite) TestErrorWhenRepositoryCreate() {
 	suite.errRepositoryCreate = assert.AnError
 
-	recipe, err := suite.service.Create(dto.FoodRecipeRequest{
+	request := dto.FoodRecipeRequest{
 		Name:              "Name",
 		Description:       "Description",
 		Ingredient:        "Ingredient",
 		Instruction:       "Instruction",
 		CookingDurationID: 1,
 		DifficultyID:      1,
-	})
-	suite.ErrorIs(err, assert.AnError)
+	}
+	recipe, err := suite.service.Create(request)
+	suite.Error(err)
+	suite.EqualError(err, "create recipe: "+assert.AnError.Error())
 
 	suite.Empty(recipe)
+	suite.repo.AssertCalled(suite.T(), "Create", &model.FoodRecipe{
+		Name:              request.Name,
+		Description:       request.Description,
+		Ingredient:        request.Ingredient,
+		Instruction:       request.Instruction,
+		CookingDurationID: request.CookingDurationID,
+		DifficultyID:      request.DifficultyID,
+	})
+	suite.repo.AssertExpectations(suite.T())
+
 }
 
 func TestServiceCreate(t *testing.T) {
