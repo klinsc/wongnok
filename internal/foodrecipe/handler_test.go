@@ -1,0 +1,164 @@
+package foodrecipe_test
+
+import (
+	"encoding/json"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"reflect"
+	"strings"
+	"testing"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"github.com/klins/devpool/go-day6/wongnok/internal/foodrecipe"
+	"github.com/klins/devpool/go-day6/wongnok/internal/model"
+	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
+	"gorm.io/gorm"
+)
+
+func TestNewHandler(t *testing.T) {
+
+	t.Run("ShouldFillProperties", func(t *testing.T) {
+		handler := foodrecipe.NewHandler(&gorm.DB{})
+
+		value := reflect.Indirect(reflect.ValueOf(handler))
+
+		for index := 0; index < value.NumField(); index++ {
+			field := value.Field(index)
+			assert.False(t, field.IsZero(), "Field %s is zero value", field.Type().Name())
+		}
+	})
+
+}
+
+type HandlerCreateTestSuite struct {
+	suite.Suite
+
+	// Dependencies
+	handler foodrecipe.IHandler
+	service *MockIService
+
+	// Mock data
+	respServiceCreate model.FoodRecipe
+	errServiceCreate  error
+
+	// Helper
+	server func(payload io.Reader) *httptest.ResponseRecorder
+}
+
+// This will run once before all tests in the suite
+func (suite *HandlerCreateTestSuite) SetupSuite() {
+	// Gin testing mode
+	gin.SetMode(gin.TestMode)
+}
+
+func (suite *HandlerCreateTestSuite) SetupTest() {
+	suite.service = new(MockIService)
+	suite.handler = foodrecipe.Handler{
+		Service: suite.service,
+	}
+
+	suite.server = func(payload io.Reader) *httptest.ResponseRecorder {
+		// Create router
+		router := gin.Default()
+		router.POST("/api/v1/food-recipes", suite.handler.Create)
+
+		// Recorder
+		recorder := httptest.NewRecorder()
+
+		// Create request
+		request, err := http.NewRequest(
+			http.MethodPost,
+			"/api/v1/food-recipes",
+			payload,
+		)
+		suite.NoError(err)
+
+		// Start testing server
+		router.ServeHTTP(recorder, request)
+
+		return recorder
+	}
+
+	suite.respServiceCreate = model.FoodRecipe{
+		Name: "Name",
+	}
+	suite.errServiceCreate = nil
+
+	suite.service.On("Create", mock.Anything).Return(func(dto.FoodRecipeRequest) (model.FoodRecipe, error) {
+		return suite.respServiceCreate, suite.errServiceCreate
+	})
+}
+
+func (suite *HandlerCreateTestSuite) TestResponseRecipeWithStatusCode201() {
+	payload := strings.NewReader(`{"name":"Name"}`)
+
+	response := suite.server(payload)
+
+	// Ensure close reader when terminated
+	body := response.Result().Body
+	defer body.Close()
+
+	// Expect body
+	expectedBody := dto.FoodRecipeResponse{
+		Name: "Name",
+	}
+	expectedJson, _ := json.Marshal(expectedBody)
+
+	suite.Equal(http.StatusCreated, response.Code)
+	suite.Equal(string(expectedJson), response.Body.String())
+	suite.service.AssertCalled(suite.T(), "Create", dto.FoodRecipeRequest{
+		Name: "Name",
+	})
+}
+
+func (suite *HandlerCreateTestSuite) TestErrorWhenRequestInvalid() {
+	payload := strings.NewReader(``)
+
+	response := suite.server(payload)
+
+	// Ensure close reader when terminated
+	body := response.Result().Body
+	defer body.Close()
+
+	suite.Equal(http.StatusBadRequest, response.Code)
+	suite.Equal(`{"message":"EOF"}`, response.Body.String())
+	suite.service.AssertNotCalled(suite.T(), "Create")
+}
+
+func (suite *HandlerCreateTestSuite) TestErrorWhenServiceCreateRecipe() {
+	suite.errServiceCreate = assert.AnError
+	payload := strings.NewReader(`{"name":"Name"}`)
+
+	response := suite.server(payload)
+
+	// Ensure close reader when terminated
+	body := response.Result().Body
+	body.Close()
+
+	suite.Equal(http.StatusInternalServerError, response.Code)
+	suite.Equal(`{"message":"assert.AnError general error for testing"}`, response.Body.String())
+}
+
+func (suite *HandlerCreateTestSuite) TestValidationErrorsErrorWhenServiceCreateRecipte() {
+	suite.errServiceCreate = make(validator.ValidationErrors, 0)
+
+	payload := strings.NewReader(`{"name":"Name"}`)
+
+	response := suite.server(payload)
+
+	// Ensure close reader when terminated
+	body := response.Result().Body
+	body.Close()
+
+	suite.Equal(http.StatusBadRequest, response.Code)
+	suite.Equal(`{"message":""}`, response.Body.String())
+}
+
+func TestHandlerCreate(t *testing.T) {
+	suite.Run(t, new(HandlerCreateTestSuite))
+}

@@ -117,6 +117,23 @@ func (suite *ServiceCreateTestSuite) TestErrorWhenRepositoryCreate() {
 	suite.Empty(recipe)
 }
 
+// func (suite *ServiceCreateTestSuite) TestErrorWhenRepositoryCreate := func(t *testing.T) {
+// 	suite.errRepositoryCreate = assert.AnError
+
+// 	recipe, err := suite.service.Create(dto.FoodRecipeRequest{
+// 		Name:              "Name",
+// 		Description:       "Description",
+// 		Ingredient:        "Ingredient",
+// 		Instruction:       "Instruction",
+// 		CookingDurationID: 1,
+// 		DifficultyID:      1,
+// 	})
+// 	suite.ErrorIs(err, assert.AnError)
+
+// 	suite.Empty(recipe)
+// 	suite.repo.AssertCalled(suite.T(), "Create", mock.Anything)
+// }
+
 func TestServiceCreate(t *testing.T) {
 	suite.Run(t, new(ServiceCreateTestSuite))
 }
