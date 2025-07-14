@@ -12,6 +12,8 @@ type IRepository interface {
 	GetAll() ([]model.FoodRecipe, error)
 	Get() (model.FoodRecipes, error)
 	Count() (int64, error)
+	Update(id string, recipe *model.FoodRecipe) error
+	Delete(id string) error
 }
 
 type Repository struct {
@@ -55,4 +57,11 @@ func (repo Repository) Count() (int64, error) {
 	var count int64
 	err := repo.DB.Model(&model.FoodRecipe{}).Count(&count).Error
 	return count, err
+}
+
+func (repo Repository) Update(id string, recipe *model.FoodRecipe) error {
+	return repo.DB.Model(&model.FoodRecipe{}).Where("id = ?", id).Updates(recipe).Error
+}
+func (repo Repository) Delete(id string) error {
+	return repo.DB.Delete(&model.FoodRecipe{}, "id = ?", id).Error
 }

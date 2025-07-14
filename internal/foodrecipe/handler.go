@@ -13,6 +13,9 @@ import (
 type IHandler interface {
 	Create(ctx *gin.Context)
 	Get(ctx *gin.Context)
+	GetByID(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
 type Handler struct {
@@ -63,6 +66,7 @@ func (handler Handler) GetByID(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, recipe.ToResponse())
 }
 
@@ -89,4 +93,51 @@ func (handler Handler) Get(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, recipes.ToResponse())
+}
+
+func (handler Handler) Update(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "ID is required"})
+		return
+	}
+
+	var request dto.FoodRecipeRequest
+	if err := ctx.BindJSON(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	recipe, err := handler.Service.Update(id, request)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{"message": "Recipe not found"})
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, recipe.ToResponse())
+}
+
+func (handler Handler) Delete(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "ID is required"})
+		return
+	}
+
+	if err := handler.Service.Delete(id); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{"message": "Recipe not found"})
+			return
+		}
+
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusNoContent, nil)
 }

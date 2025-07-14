@@ -14,6 +14,8 @@ type IService interface {
 	GetAll() ([]model.FoodRecipe, error)
 	Get() (model.FoodRecipes, int64, error)
 	Count() (int64, error)
+	Update(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error)
+	Delete(id string) error
 }
 
 type Service struct {
@@ -82,4 +84,29 @@ func (service Service) Count() (int64, error) {
 		return 0, errors.Wrap(err, "count recipes")
 	}
 	return count, nil
+}
+
+func (service Service) Update(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error) {
+	validate := validator.New()
+	if err := validate.Struct(request); err != nil {
+		return model.FoodRecipe{}, errors.Wrap(err, "request invalid")
+	}
+	var recipe model.FoodRecipe
+
+	recipe = recipe.FromRequest(request)
+	if err := service.Repository.Update(id, &recipe); err != nil {
+		return model.FoodRecipe{}, errors.Wrap(err, "update recipe")
+	}
+	updatedRecipe, err := service.Repository.GetByID(id)
+	if err != nil {
+		return model.FoodRecipe{}, errors.Wrap(err, "get updated recipe by ID")
+	}
+	return updatedRecipe, nil
+}
+
+func (service Service) Delete(id string) error {
+	if err := service.Repository.Delete(id); err != nil {
+		return errors.Wrap(err, "delete recipe")
+	}
+	return nil
 }
