@@ -10,6 +10,7 @@ import (
 
 type IService interface {
 	Create(request dto.RatingRequest, recipeID int) (model.Rating, error)
+	GetByID(id int) (model.Ratings, error)
 }
 
 type Service struct {
@@ -37,4 +38,13 @@ func (service Service) Create(request dto.RatingRequest, recipeID int) (model.Ra
 	}
 
 	return rating, nil
+}
+
+func (service Service) GetByID(id int) (model.Ratings, error) {
+	ratings, err := service.Repository.GetByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return ratings, nil
 }

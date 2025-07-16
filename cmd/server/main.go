@@ -69,6 +69,7 @@ func main() {
 	group.PUT("/food-recipes/:id", foodRecipeHandler.Update)
 	group.DELETE("/food-recipes/:id", foodRecipeHandler.Delete)
 	group.POST("/food-recipes/:id/ratings", ratingHandler.Create)
+	group.GET("/food-recipes/:id/ratings", ratingHandler.GetByID)
 
 	if err := router.Run(); err != nil {
 		log.Fatal("Server error:", err)

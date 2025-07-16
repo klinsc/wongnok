@@ -7,6 +7,7 @@ import (
 
 type IRepository interface {
 	Create(rating *model.Rating) error
+	GetByID(id int) (model.Ratings, error)
 }
 
 type Repository struct {
@@ -25,4 +26,14 @@ func (repo Repository) Create(rating *model.Rating) error {
 	}
 
 	return nil
+}
+
+func (repo Repository) GetByID(id int) (model.Ratings, error) {
+	var ratings model.Ratings
+
+	if err := repo.DB.Where("food_recipe_id = ?", id).Find(&ratings).Error; err != nil {
+		return nil, err
+	}
+
+	return ratings, nil
 }

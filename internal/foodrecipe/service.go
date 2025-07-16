@@ -50,6 +50,9 @@ func (service Service) GetByID(id string) (model.FoodRecipe, error) {
 		return model.FoodRecipe{}, errors.Wrap(err, "get recipe by ID")
 	}
 
+	// Calculate the average rating for the recipe
+	recipe = calculateAverageRating(recipe)
+
 	return recipe, nil
 }
 
@@ -57,6 +60,11 @@ func (service Service) GetAll() ([]model.FoodRecipe, error) {
 	recipes, err := service.Repository.GetAll()
 	if err != nil {
 		return nil, errors.Wrap(err, "get all recipes")
+	}
+
+	// Calculate the average rating for each recipe
+	for i, recipe := range recipes {
+		recipes[i] = calculateAverageRating(recipe)
 	}
 
 	return recipes, nil
@@ -74,6 +82,9 @@ func (service Service) Get() (model.FoodRecipes, int64, error) {
 	if err != nil {
 		return nil, 0, errors.Wrap(err, "count recipes")
 	}
+
+	// Calculate average ratings for each recipe
+	recipes = calculateAverageRatings(recipes)
 
 	return recipes, total, nil
 }
@@ -101,9 +112,41 @@ func (service Service) Update(id string, request dto.FoodRecipeRequest) (model.F
 	if err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "get updated recipe by ID")
 	}
+
+	// Calculate the average rating after updating
+	updatedRecipe = calculateAverageRating(updatedRecipe)
+
 	return updatedRecipe, nil
 }
 
 func (service Service) Delete(id int) error {
 	return service.Repository.Delete(id)
+}
+
+func calculateAverageRating(recipe model.FoodRecipe) model.FoodRecipe {
+	if len(recipe.Ratings) > 0 {
+		var totalRating float64
+		for _, rating := range recipe.Ratings {
+			totalRating += rating.Score
+		}
+		recipe.AverageRating = totalRating / float64(len(recipe.Ratings))
+	} else {
+		recipe.AverageRating = 0
+	}
+	return recipe
+}
+
+func calculateAverageRatings(recipes model.FoodRecipes) model.FoodRecipes {
+	for i, recipe := range recipes {
+		if len(recipe.Ratings) > 0 {
+			var totalRating float64
+			for _, rating := range recipe.Ratings {
+				totalRating += rating.Score
+			}
+			recipes[i].AverageRating = totalRating / float64(len(recipe.Ratings))
+		} else {
+			recipes[i].AverageRating = 0
+		}
+	}
+	return recipes
 }

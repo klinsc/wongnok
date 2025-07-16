@@ -23,3 +23,17 @@ func (rating Rating) ToResponse() dto.RatingResponse {
 		FoodRecipeID: rating.FoodRecipeID,
 	}
 }
+
+type Ratings []Rating
+
+func (ratings Ratings) ToResponse() dto.RatingsResponse {
+	var results = make([]dto.RatingResponse, 0)
+
+	for _, rating := range ratings {
+		results = append(results, rating.ToResponse())
+	}
+
+	return dto.RatingsResponse{
+		Results: results,
+	}
+}

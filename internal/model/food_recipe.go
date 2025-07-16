@@ -16,6 +16,8 @@ type FoodRecipe struct {
 	CookingDuration   CookingDuration
 	DifficultyID      uint
 	Difficulty        Difficulty
+	Ratings           Ratings // new
+	AverageRating     float64 `gorm:"-"` // new
 }
 
 func (recipe FoodRecipe) FromRequest(request dto.FoodRecipeRequest) FoodRecipe {
@@ -46,8 +48,9 @@ func (recipe FoodRecipe) ToResponse() dto.FoodRecipeResponse {
 			ID:   recipe.Difficulty.ID,
 			Name: recipe.Difficulty.Name,
 		},
-		CreatedAt: recipe.CreatedAt,
-		UpdatedAt: recipe.UpdatedAt,
+		CreatedAt:     recipe.CreatedAt,
+		UpdatedAt:     recipe.UpdatedAt,
+		AverageRating: recipe.AverageRating, // new
 	}
 }
 

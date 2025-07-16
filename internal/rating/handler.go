@@ -13,6 +13,7 @@ import (
 
 type IHandler interface {
 	Create(ctx *gin.Context)
+	GetByID(ctx *gin.Context)
 }
 
 type Handler struct {
@@ -53,4 +54,30 @@ func (handler Handler) Create(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusCreated, rating.ToResponse())
+}
+
+func (handler Handler) GetByID(ctx *gin.Context) {
+	id := ctx.Param("id")
+	if id == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "ID is required"})
+		return
+	}
+
+	ratingID, err := strconv.Atoi(id)
+	if err != nil || ratingID <= 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Invalid ID"})
+		return
+	}
+
+	ratings, err := handler.Service.GetByID(ratingID)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			ctx.JSON(http.StatusNotFound, gin.H{"message": "Rating not found"})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, ratings.ToResponse())
 }
