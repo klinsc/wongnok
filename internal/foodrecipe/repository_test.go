@@ -160,3 +160,53 @@ func (suite *RepositoryCreateTestSuite) TestErrorWhenDuplicateID() {
 func TestRepositoryCreate(t *testing.T) {
 	suite.Run(t, new(RepositoryCreateTestSuite))
 }
+
+type RepositoryGetByIDTestSuite struct {
+	RepositoryTestSuite
+}
+
+func (suite *RepositoryGetByIDTestSuite) TestReturnRecipeByID() {
+	recipeID := "1"
+
+	recipe, err := suite.repo.GetByID(recipeID)
+	suite.NoError(err)
+
+	expectedRecipe := model.FoodRecipe{
+		Model:             gorm.Model{ID: 1},
+		Name:              "Omlet",
+		Description:       "Eggs fried?",
+		Ingredient:        "Eggs",
+		Instruction:       "Cooking",
+		CookingDurationID: 1,
+		CookingDuration: model.CookingDuration{
+			Model: gorm.Model{ID: 1},
+			Name:  "5 - 10",
+		},
+		DifficultyID: 1,
+		Difficulty: model.Difficulty{
+			Model: gorm.Model{ID: 1},
+			Name:  "Easy",
+		},
+	}
+
+	// Ignore CreatedAt and UpdatedAt fields
+	recipe.CookingDuration.CreatedAt, recipe.CookingDuration.UpdatedAt = time.Time{}, time.Time{}
+	recipe.Difficulty.CreatedAt, recipe.Difficulty.UpdatedAt = time.Time{}, time.Time{}
+	recipe.CreatedAt, recipe.UpdatedAt = time.Time{}, time.Time{}
+
+	suite.Equal(expectedRecipe, recipe)
+}
+
+func (suite *RepositoryGetByIDTestSuite) TestErrorWhenRecipeNotFound() {
+	recipeID := "999" // Assuming this ID does not exist
+
+	recipe, err := suite.repo.GetByID(recipeID)
+	suite.Error(err)
+	suite.EqualError(err, "record not found")
+
+	suite.Empty(recipe)
+}
+
+func TestRepositoryGetByID(t *testing.T) {
+	suite.Run(t, new(RepositoryGetByIDTestSuite))
+}

@@ -132,3 +132,57 @@ func (suite *ServiceCreateTestSuite) TestErrorWhenRepositoryCreate() {
 func TestServiceCreate(t *testing.T) {
 	suite.Run(t, new(ServiceCreateTestSuite))
 }
+
+type ServiceGetByIDTestSuite struct {
+	suite.Suite
+
+	// Dependencies
+	service foodrecipe.IService
+	repo    *MockIRepository
+
+	// Mock data
+	errRepositoryGetByID      error
+	responseRepositoryGetByID model.FoodRecipe
+}
+
+func (suite *ServiceGetByIDTestSuite) SetupTest() {
+	suite.repo = new(MockIRepository)
+	suite.service = &foodrecipe.Service{
+		Repository: suite.repo,
+	}
+
+	suite.errRepositoryGetByID = nil
+	suite.responseRepositoryGetByID = model.FoodRecipe{
+		Name: "Name",
+	}
+
+	suite.repo.On("GetByID", mock.AnythingOfType("string")).Return(func(id string) (model.FoodRecipe, error) {
+		if id == "1" {
+			return suite.responseRepositoryGetByID, suite.errRepositoryGetByID
+		}
+		return model.FoodRecipe{}, gorm.ErrRecordNotFound
+	})
+}
+
+func (suite *ServiceGetByIDTestSuite) TestReturnRecipeWhenFound() {
+	recipe, err := suite.service.GetByID("1")
+	suite.NoError(err)
+
+	expectedRecipe := model.FoodRecipe{
+		Name: "Name",
+	}
+
+	suite.Equal(expectedRecipe, recipe)
+	suite.repo.AssertCalled(suite.T(), "GetByID", "1")
+}
+
+func (suite *ServiceGetByIDTestSuite) TestErrorWhenRecipeNotFound() {
+	recipe, err := suite.service.GetByID("2")
+	suite.ErrorIs(err, gorm.ErrRecordNotFound)
+	suite.Empty(recipe)
+	suite.repo.AssertCalled(suite.T(), "GetByID", "2")
+}
+
+func TestServiceGetByID(t *testing.T) {
+	suite.Run(t, new(ServiceGetByIDTestSuite))
+}

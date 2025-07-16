@@ -78,6 +78,166 @@ func (_c *MockIHandler_Create_Call) RunAndReturn(run func(ctx *gin.Context)) *Mo
 	return _c
 }
 
+// Delete provides a mock function for the type MockIHandler
+func (_mock *MockIHandler) Delete(ctx *gin.Context) {
+	_mock.Called(ctx)
+	return
+}
+
+// MockIHandler_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
+type MockIHandler_Delete_Call struct {
+	*mock.Call
+}
+
+// Delete is a helper method to define mock.On call
+//   - ctx *gin.Context
+func (_e *MockIHandler_Expecter) Delete(ctx interface{}) *MockIHandler_Delete_Call {
+	return &MockIHandler_Delete_Call{Call: _e.mock.On("Delete", ctx)}
+}
+
+func (_c *MockIHandler_Delete_Call) Run(run func(ctx *gin.Context)) *MockIHandler_Delete_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 *gin.Context
+		if args[0] != nil {
+			arg0 = args[0].(*gin.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockIHandler_Delete_Call) Return() *MockIHandler_Delete_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *MockIHandler_Delete_Call) RunAndReturn(run func(ctx *gin.Context)) *MockIHandler_Delete_Call {
+	_c.Run(run)
+	return _c
+}
+
+// Get provides a mock function for the type MockIHandler
+func (_mock *MockIHandler) Get(ctx *gin.Context) {
+	_mock.Called(ctx)
+	return
+}
+
+// MockIHandler_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type MockIHandler_Get_Call struct {
+	*mock.Call
+}
+
+// Get is a helper method to define mock.On call
+//   - ctx *gin.Context
+func (_e *MockIHandler_Expecter) Get(ctx interface{}) *MockIHandler_Get_Call {
+	return &MockIHandler_Get_Call{Call: _e.mock.On("Get", ctx)}
+}
+
+func (_c *MockIHandler_Get_Call) Run(run func(ctx *gin.Context)) *MockIHandler_Get_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 *gin.Context
+		if args[0] != nil {
+			arg0 = args[0].(*gin.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockIHandler_Get_Call) Return() *MockIHandler_Get_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *MockIHandler_Get_Call) RunAndReturn(run func(ctx *gin.Context)) *MockIHandler_Get_Call {
+	_c.Run(run)
+	return _c
+}
+
+// GetByID provides a mock function for the type MockIHandler
+func (_mock *MockIHandler) GetByID(ctx *gin.Context) {
+	_mock.Called(ctx)
+	return
+}
+
+// MockIHandler_GetByID_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetByID'
+type MockIHandler_GetByID_Call struct {
+	*mock.Call
+}
+
+// GetByID is a helper method to define mock.On call
+//   - ctx *gin.Context
+func (_e *MockIHandler_Expecter) GetByID(ctx interface{}) *MockIHandler_GetByID_Call {
+	return &MockIHandler_GetByID_Call{Call: _e.mock.On("GetByID", ctx)}
+}
+
+func (_c *MockIHandler_GetByID_Call) Run(run func(ctx *gin.Context)) *MockIHandler_GetByID_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 *gin.Context
+		if args[0] != nil {
+			arg0 = args[0].(*gin.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockIHandler_GetByID_Call) Return() *MockIHandler_GetByID_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *MockIHandler_GetByID_Call) RunAndReturn(run func(ctx *gin.Context)) *MockIHandler_GetByID_Call {
+	_c.Run(run)
+	return _c
+}
+
+// Update provides a mock function for the type MockIHandler
+func (_mock *MockIHandler) Update(ctx *gin.Context) {
+	_mock.Called(ctx)
+	return
+}
+
+// MockIHandler_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type MockIHandler_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//   - ctx *gin.Context
+func (_e *MockIHandler_Expecter) Update(ctx interface{}) *MockIHandler_Update_Call {
+	return &MockIHandler_Update_Call{Call: _e.mock.On("Update", ctx)}
+}
+
+func (_c *MockIHandler_Update_Call) Run(run func(ctx *gin.Context)) *MockIHandler_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 *gin.Context
+		if args[0] != nil {
+			arg0 = args[0].(*gin.Context)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockIHandler_Update_Call) Return() *MockIHandler_Update_Call {
+	_c.Call.Return()
+	return _c
+}
+
+func (_c *MockIHandler_Update_Call) RunAndReturn(run func(ctx *gin.Context)) *MockIHandler_Update_Call {
+	_c.Run(run)
+	return _c
+}
+
 // NewMockIRepository creates a new instance of MockIRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockIRepository(t interface {
@@ -103,6 +263,59 @@ type MockIRepository_Expecter struct {
 
 func (_m *MockIRepository) EXPECT() *MockIRepository_Expecter {
 	return &MockIRepository_Expecter{mock: &_m.Mock}
+}
+
+// Count provides a mock function for the type MockIRepository
+func (_mock *MockIRepository) Count() (int64, error) {
+	ret := _mock.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Count")
+	}
+
+	var r0 int64
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func() (int64, error)); ok {
+		return returnFunc()
+	}
+	if returnFunc, ok := ret.Get(0).(func() int64); ok {
+		r0 = returnFunc()
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+	if returnFunc, ok := ret.Get(1).(func() error); ok {
+		r1 = returnFunc()
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockIRepository_Count_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Count'
+type MockIRepository_Count_Call struct {
+	*mock.Call
+}
+
+// Count is a helper method to define mock.On call
+func (_e *MockIRepository_Expecter) Count() *MockIRepository_Count_Call {
+	return &MockIRepository_Count_Call{Call: _e.mock.On("Count")}
+}
+
+func (_c *MockIRepository_Count_Call) Run(run func()) *MockIRepository_Count_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *MockIRepository_Count_Call) Return(n int64, err error) *MockIRepository_Count_Call {
+	_c.Call.Return(n, err)
+	return _c
+}
+
+func (_c *MockIRepository_Count_Call) RunAndReturn(run func() (int64, error)) *MockIRepository_Count_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // Create provides a mock function for the type MockIRepository
@@ -152,6 +365,112 @@ func (_c *MockIRepository_Create_Call) Return(err error) *MockIRepository_Create
 }
 
 func (_c *MockIRepository_Create_Call) RunAndReturn(run func(recipe *model.FoodRecipe) error) *MockIRepository_Create_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Delete provides a mock function for the type MockIRepository
+func (_mock *MockIRepository) Delete(id string) error {
+	ret := _mock.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Delete")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(string) error); ok {
+		r0 = returnFunc(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockIRepository_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
+type MockIRepository_Delete_Call struct {
+	*mock.Call
+}
+
+// Delete is a helper method to define mock.On call
+//   - id string
+func (_e *MockIRepository_Expecter) Delete(id interface{}) *MockIRepository_Delete_Call {
+	return &MockIRepository_Delete_Call{Call: _e.mock.On("Delete", id)}
+}
+
+func (_c *MockIRepository_Delete_Call) Run(run func(id string)) *MockIRepository_Delete_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockIRepository_Delete_Call) Return(err error) *MockIRepository_Delete_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockIRepository_Delete_Call) RunAndReturn(run func(id string) error) *MockIRepository_Delete_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Get provides a mock function for the type MockIRepository
+func (_mock *MockIRepository) Get() (model.FoodRecipes, error) {
+	ret := _mock.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Get")
+	}
+
+	var r0 model.FoodRecipes
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func() (model.FoodRecipes, error)); ok {
+		return returnFunc()
+	}
+	if returnFunc, ok := ret.Get(0).(func() model.FoodRecipes); ok {
+		r0 = returnFunc()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(model.FoodRecipes)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func() error); ok {
+		r1 = returnFunc()
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockIRepository_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type MockIRepository_Get_Call struct {
+	*mock.Call
+}
+
+// Get is a helper method to define mock.On call
+func (_e *MockIRepository_Expecter) Get() *MockIRepository_Get_Call {
+	return &MockIRepository_Get_Call{Call: _e.mock.On("Get")}
+}
+
+func (_c *MockIRepository_Get_Call) Run(run func()) *MockIRepository_Get_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *MockIRepository_Get_Call) Return(foodRecipes model.FoodRecipes, err error) *MockIRepository_Get_Call {
+	_c.Call.Return(foodRecipes, err)
+	return _c
+}
+
+func (_c *MockIRepository_Get_Call) RunAndReturn(run func() (model.FoodRecipes, error)) *MockIRepository_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -271,6 +590,63 @@ func (_c *MockIRepository_GetByID_Call) RunAndReturn(run func(id string) (model.
 	return _c
 }
 
+// Update provides a mock function for the type MockIRepository
+func (_mock *MockIRepository) Update(id string, recipe *model.FoodRecipe) error {
+	ret := _mock.Called(id, recipe)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(string, *model.FoodRecipe) error); ok {
+		r0 = returnFunc(id, recipe)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockIRepository_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type MockIRepository_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//   - id string
+//   - recipe *model.FoodRecipe
+func (_e *MockIRepository_Expecter) Update(id interface{}, recipe interface{}) *MockIRepository_Update_Call {
+	return &MockIRepository_Update_Call{Call: _e.mock.On("Update", id, recipe)}
+}
+
+func (_c *MockIRepository_Update_Call) Run(run func(id string, recipe *model.FoodRecipe)) *MockIRepository_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		var arg1 *model.FoodRecipe
+		if args[1] != nil {
+			arg1 = args[1].(*model.FoodRecipe)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockIRepository_Update_Call) Return(err error) *MockIRepository_Update_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockIRepository_Update_Call) RunAndReturn(run func(id string, recipe *model.FoodRecipe) error) *MockIRepository_Update_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
 // NewMockIService creates a new instance of MockIService. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
 // The first argument is typically a *testing.T value.
 func NewMockIService(t interface {
@@ -296,6 +672,59 @@ type MockIService_Expecter struct {
 
 func (_m *MockIService) EXPECT() *MockIService_Expecter {
 	return &MockIService_Expecter{mock: &_m.Mock}
+}
+
+// Count provides a mock function for the type MockIService
+func (_mock *MockIService) Count() (int64, error) {
+	ret := _mock.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Count")
+	}
+
+	var r0 int64
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func() (int64, error)); ok {
+		return returnFunc()
+	}
+	if returnFunc, ok := ret.Get(0).(func() int64); ok {
+		r0 = returnFunc()
+	} else {
+		r0 = ret.Get(0).(int64)
+	}
+	if returnFunc, ok := ret.Get(1).(func() error); ok {
+		r1 = returnFunc()
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockIService_Count_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Count'
+type MockIService_Count_Call struct {
+	*mock.Call
+}
+
+// Count is a helper method to define mock.On call
+func (_e *MockIService_Expecter) Count() *MockIService_Count_Call {
+	return &MockIService_Count_Call{Call: _e.mock.On("Count")}
+}
+
+func (_c *MockIService_Count_Call) Run(run func()) *MockIService_Count_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *MockIService_Count_Call) Return(n int64, err error) *MockIService_Count_Call {
+	_c.Call.Return(n, err)
+	return _c
+}
+
+func (_c *MockIService_Count_Call) RunAndReturn(run func() (int64, error)) *MockIService_Count_Call {
+	_c.Call.Return(run)
+	return _c
 }
 
 // Create provides a mock function for the type MockIService
@@ -354,6 +783,118 @@ func (_c *MockIService_Create_Call) Return(foodRecipe model.FoodRecipe, err erro
 }
 
 func (_c *MockIService_Create_Call) RunAndReturn(run func(request dto.FoodRecipeRequest) (model.FoodRecipe, error)) *MockIService_Create_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Delete provides a mock function for the type MockIService
+func (_mock *MockIService) Delete(id string) error {
+	ret := _mock.Called(id)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Delete")
+	}
+
+	var r0 error
+	if returnFunc, ok := ret.Get(0).(func(string) error); ok {
+		r0 = returnFunc(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+	return r0
+}
+
+// MockIService_Delete_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Delete'
+type MockIService_Delete_Call struct {
+	*mock.Call
+}
+
+// Delete is a helper method to define mock.On call
+//   - id string
+func (_e *MockIService_Expecter) Delete(id interface{}) *MockIService_Delete_Call {
+	return &MockIService_Delete_Call{Call: _e.mock.On("Delete", id)}
+}
+
+func (_c *MockIService_Delete_Call) Run(run func(id string)) *MockIService_Delete_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		run(
+			arg0,
+		)
+	})
+	return _c
+}
+
+func (_c *MockIService_Delete_Call) Return(err error) *MockIService_Delete_Call {
+	_c.Call.Return(err)
+	return _c
+}
+
+func (_c *MockIService_Delete_Call) RunAndReturn(run func(id string) error) *MockIService_Delete_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Get provides a mock function for the type MockIService
+func (_mock *MockIService) Get() (model.FoodRecipes, int64, error) {
+	ret := _mock.Called()
+
+	if len(ret) == 0 {
+		panic("no return value specified for Get")
+	}
+
+	var r0 model.FoodRecipes
+	var r1 int64
+	var r2 error
+	if returnFunc, ok := ret.Get(0).(func() (model.FoodRecipes, int64, error)); ok {
+		return returnFunc()
+	}
+	if returnFunc, ok := ret.Get(0).(func() model.FoodRecipes); ok {
+		r0 = returnFunc()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(model.FoodRecipes)
+		}
+	}
+	if returnFunc, ok := ret.Get(1).(func() int64); ok {
+		r1 = returnFunc()
+	} else {
+		r1 = ret.Get(1).(int64)
+	}
+	if returnFunc, ok := ret.Get(2).(func() error); ok {
+		r2 = returnFunc()
+	} else {
+		r2 = ret.Error(2)
+	}
+	return r0, r1, r2
+}
+
+// MockIService_Get_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Get'
+type MockIService_Get_Call struct {
+	*mock.Call
+}
+
+// Get is a helper method to define mock.On call
+func (_e *MockIService_Expecter) Get() *MockIService_Get_Call {
+	return &MockIService_Get_Call{Call: _e.mock.On("Get")}
+}
+
+func (_c *MockIService_Get_Call) Run(run func()) *MockIService_Get_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		run()
+	})
+	return _c
+}
+
+func (_c *MockIService_Get_Call) Return(foodRecipes model.FoodRecipes, n int64, err error) *MockIService_Get_Call {
+	_c.Call.Return(foodRecipes, n, err)
+	return _c
+}
+
+func (_c *MockIService_Get_Call) RunAndReturn(run func() (model.FoodRecipes, int64, error)) *MockIService_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -469,6 +1010,72 @@ func (_c *MockIService_GetByID_Call) Return(foodRecipe model.FoodRecipe, err err
 }
 
 func (_c *MockIService_GetByID_Call) RunAndReturn(run func(id string) (model.FoodRecipe, error)) *MockIService_GetByID_Call {
+	_c.Call.Return(run)
+	return _c
+}
+
+// Update provides a mock function for the type MockIService
+func (_mock *MockIService) Update(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error) {
+	ret := _mock.Called(id, request)
+
+	if len(ret) == 0 {
+		panic("no return value specified for Update")
+	}
+
+	var r0 model.FoodRecipe
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(string, dto.FoodRecipeRequest) (model.FoodRecipe, error)); ok {
+		return returnFunc(id, request)
+	}
+	if returnFunc, ok := ret.Get(0).(func(string, dto.FoodRecipeRequest) model.FoodRecipe); ok {
+		r0 = returnFunc(id, request)
+	} else {
+		r0 = ret.Get(0).(model.FoodRecipe)
+	}
+	if returnFunc, ok := ret.Get(1).(func(string, dto.FoodRecipeRequest) error); ok {
+		r1 = returnFunc(id, request)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
+}
+
+// MockIService_Update_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'Update'
+type MockIService_Update_Call struct {
+	*mock.Call
+}
+
+// Update is a helper method to define mock.On call
+//   - id string
+//   - request dto.FoodRecipeRequest
+func (_e *MockIService_Expecter) Update(id interface{}, request interface{}) *MockIService_Update_Call {
+	return &MockIService_Update_Call{Call: _e.mock.On("Update", id, request)}
+}
+
+func (_c *MockIService_Update_Call) Run(run func(id string, request dto.FoodRecipeRequest)) *MockIService_Update_Call {
+	_c.Call.Run(func(args mock.Arguments) {
+		var arg0 string
+		if args[0] != nil {
+			arg0 = args[0].(string)
+		}
+		var arg1 dto.FoodRecipeRequest
+		if args[1] != nil {
+			arg1 = args[1].(dto.FoodRecipeRequest)
+		}
+		run(
+			arg0,
+			arg1,
+		)
+	})
+	return _c
+}
+
+func (_c *MockIService_Update_Call) Return(foodRecipe model.FoodRecipe, err error) *MockIService_Update_Call {
+	_c.Call.Return(foodRecipe, err)
+	return _c
+}
+
+func (_c *MockIService_Update_Call) RunAndReturn(run func(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error)) *MockIService_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }
