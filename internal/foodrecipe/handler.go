@@ -2,6 +2,7 @@ package foodrecipe
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -123,21 +124,19 @@ func (handler Handler) Update(ctx *gin.Context) {
 }
 
 func (handler Handler) Delete(ctx *gin.Context) {
-	id := ctx.Param("id")
-	if id == "" {
-		ctx.JSON(http.StatusBadRequest, gin.H{"message": "ID is required"})
-		return
+	var id int
+
+	pathParam := ctx.Param("id")
+	if pathParam != "" {
+		if parsed, err := strconv.Atoi(pathParam); err == nil && parsed > 0 {
+			id = parsed
+		}
 	}
 
 	if err := handler.Service.Delete(id); err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			ctx.JSON(http.StatusNotFound, gin.H{"message": "Recipe not found"})
-			return
-		}
-
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusNoContent, nil)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Recipe deleted successfully"})
 }

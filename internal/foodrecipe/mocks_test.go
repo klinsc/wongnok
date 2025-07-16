@@ -370,7 +370,7 @@ func (_c *MockIRepository_Create_Call) RunAndReturn(run func(recipe *model.FoodR
 }
 
 // Delete provides a mock function for the type MockIRepository
-func (_mock *MockIRepository) Delete(id string) error {
+func (_mock *MockIRepository) Delete(id int) error {
 	ret := _mock.Called(id)
 
 	if len(ret) == 0 {
@@ -378,7 +378,7 @@ func (_mock *MockIRepository) Delete(id string) error {
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(string) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(int) error); ok {
 		r0 = returnFunc(id)
 	} else {
 		r0 = ret.Error(0)
@@ -392,16 +392,16 @@ type MockIRepository_Delete_Call struct {
 }
 
 // Delete is a helper method to define mock.On call
-//   - id string
+//   - id int
 func (_e *MockIRepository_Expecter) Delete(id interface{}) *MockIRepository_Delete_Call {
 	return &MockIRepository_Delete_Call{Call: _e.mock.On("Delete", id)}
 }
 
-func (_c *MockIRepository_Delete_Call) Run(run func(id string)) *MockIRepository_Delete_Call {
+func (_c *MockIRepository_Delete_Call) Run(run func(id int)) *MockIRepository_Delete_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 int
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(int)
 		}
 		run(
 			arg0,
@@ -415,7 +415,7 @@ func (_c *MockIRepository_Delete_Call) Return(err error) *MockIRepository_Delete
 	return _c
 }
 
-func (_c *MockIRepository_Delete_Call) RunAndReturn(run func(id string) error) *MockIRepository_Delete_Call {
+func (_c *MockIRepository_Delete_Call) RunAndReturn(run func(id int) error) *MockIRepository_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -788,7 +788,7 @@ func (_c *MockIService_Create_Call) RunAndReturn(run func(request dto.FoodRecipe
 }
 
 // Delete provides a mock function for the type MockIService
-func (_mock *MockIService) Delete(id string) error {
+func (_mock *MockIService) Delete(id int) error {
 	ret := _mock.Called(id)
 
 	if len(ret) == 0 {
@@ -796,7 +796,7 @@ func (_mock *MockIService) Delete(id string) error {
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(string) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(int) error); ok {
 		r0 = returnFunc(id)
 	} else {
 		r0 = ret.Error(0)
@@ -810,16 +810,16 @@ type MockIService_Delete_Call struct {
 }
 
 // Delete is a helper method to define mock.On call
-//   - id string
+//   - id int
 func (_e *MockIService_Expecter) Delete(id interface{}) *MockIService_Delete_Call {
 	return &MockIService_Delete_Call{Call: _e.mock.On("Delete", id)}
 }
 
-func (_c *MockIService_Delete_Call) Run(run func(id string)) *MockIService_Delete_Call {
+func (_c *MockIService_Delete_Call) Run(run func(id int)) *MockIService_Delete_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 int
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(int)
 		}
 		run(
 			arg0,
@@ -833,7 +833,7 @@ func (_c *MockIService_Delete_Call) Return(err error) *MockIService_Delete_Call 
 	return _c
 }
 
-func (_c *MockIService_Delete_Call) RunAndReturn(run func(id string) error) *MockIService_Delete_Call {
+func (_c *MockIService_Delete_Call) RunAndReturn(run func(id int) error) *MockIService_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }

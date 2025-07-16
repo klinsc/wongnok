@@ -15,7 +15,7 @@ type IService interface {
 	Get() (model.FoodRecipes, int64, error)
 	Count() (int64, error)
 	Update(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error)
-	Delete(id string) error
+	Delete(id int) error
 }
 
 type Service struct {
@@ -104,9 +104,6 @@ func (service Service) Update(id string, request dto.FoodRecipeRequest) (model.F
 	return updatedRecipe, nil
 }
 
-func (service Service) Delete(id string) error {
-	if err := service.Repository.Delete(id); err != nil {
-		return errors.Wrap(err, "delete recipe")
-	}
-	return nil
+func (service Service) Delete(id int) error {
+	return service.Repository.Delete(id)
 }
