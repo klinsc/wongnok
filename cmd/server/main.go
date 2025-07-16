@@ -12,6 +12,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/klins/devpool/go-day6/wongnok/config"
 	"github.com/klins/devpool/go-day6/wongnok/internal/foodrecipe"
+	"github.com/klins/devpool/go-day6/wongnok/internal/rating"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -55,6 +56,7 @@ func main() {
 
 	// Handler
 	foodRecipeHandler := foodrecipe.NewHandler(db)
+	ratingHandler := rating.NewHandler(db)
 
 	// Router
 	router := gin.Default()
@@ -66,6 +68,7 @@ func main() {
 	group.POST("/food-recipes", foodRecipeHandler.Create)
 	group.PUT("/food-recipes/:id", foodRecipeHandler.Update)
 	group.DELETE("/food-recipes/:id", foodRecipeHandler.Delete)
+	group.POST("/food-recipes/:id/ratings", ratingHandler.Create)
 
 	if err := router.Run(); err != nil {
 		log.Fatal("Server error:", err)
