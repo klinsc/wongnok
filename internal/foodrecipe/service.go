@@ -12,7 +12,7 @@ type IService interface {
 	Create(request dto.FoodRecipeRequest) (model.FoodRecipe, error)
 	GetByID(id string) (model.FoodRecipe, error)
 	GetAll() ([]model.FoodRecipe, error)
-	Get() (model.FoodRecipes, int64, error)
+	Get(foodRecipeQuery model.FoodRecipeQuery) (model.FoodRecipes, int64, error)
 	Count() (int64, error)
 	Update(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error)
 	Delete(id int) error
@@ -70,23 +70,20 @@ func (service Service) GetAll() ([]model.FoodRecipe, error) {
 	return recipes, nil
 }
 
-func (service Service) Get() (model.FoodRecipes, int64, error) {
-	// Call the repository method to get recipes and total count
-	recipes, err := service.Repository.Get()
-	if err != nil {
-		return nil, 0, errors.Wrap(err, "get recipes")
-	}
-
-	// Return the recipes and get the total count
+func (service Service) Get(foodRecipeQuery model.FoodRecipeQuery) (model.FoodRecipes, int64, error) {
 	total, err := service.Repository.Count()
 	if err != nil {
-		return nil, 0, errors.Wrap(err, "count recipes")
+		return nil, 0, err
 	}
 
-	// Calculate average ratings for each recipe
-	recipes = calculateAverageRatings(recipes)
+	results, err := service.Repository.Get(foodRecipeQuery)
+	if err != nil {
+		return nil, 0, err
+	}
 
-	return recipes, total, nil
+	results = calculateAverageRatings(results)
+
+	return results, total, nil
 }
 
 func (service Service) Count() (int64, error) {

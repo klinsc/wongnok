@@ -12,7 +12,7 @@ type IRepository interface {
 	Create(recipe *model.FoodRecipe) error
 	GetByID(id string) (model.FoodRecipe, error)
 	GetAll() ([]model.FoodRecipe, error)
-	Get() (model.FoodRecipes, error)
+	Get(query model.FoodRecipeQuery) (model.FoodRecipes, error)
 	Count() (int64, error)
 	Update(id string, recipe *model.FoodRecipe) error
 	Delete(id int) error
@@ -44,11 +44,17 @@ func (repo Repository) GetAll() ([]model.FoodRecipe, error) {
 	return recipes, err
 }
 
-func (repo Repository) Get() (model.FoodRecipes, error) {
+func (repo Repository) Get(query model.FoodRecipeQuery) (model.FoodRecipes, error) {
 	var recipes = make(model.FoodRecipes, 0)
 
-	err := repo.DB.Preload(clause.Associations).Find(&recipes).Error
-	if err != nil {
+	offset := (query.Page - 1) * query.Limit
+	db := repo.DB.Preload(clause.Associations)
+
+	if query.Search != "" {
+		db = db.Where("name LIKE ?", "%"+query.Search+"%").Or("description LIKE ?", "%"+query.Search+"%")
+	}
+
+	if err := db.Order("name asc").Limit(query.Limit).Offset(offset).Find(&recipes).Error; err != nil {
 		return nil, err
 	}
 

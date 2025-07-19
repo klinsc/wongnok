@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -87,13 +88,18 @@ func (handler Handler) GetAll(ctx *gin.Context) {
 }
 
 func (handler Handler) Get(ctx *gin.Context) {
-	recipes, _, err := handler.Service.Get()
+	var foodRecipeQuery model.FoodRecipeQuery
+	if err := ctx.ShouldBindQuery(&foodRecipeQuery); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	recipes, total, err := handler.Service.Get(foodRecipeQuery)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, recipes.ToResponse())
+	ctx.JSON(http.StatusOK, recipes.ToResponse(total))
 }
 
 func (handler Handler) Update(ctx *gin.Context) {

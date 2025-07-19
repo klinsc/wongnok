@@ -20,6 +20,12 @@ type FoodRecipe struct {
 	AverageRating     float64 `gorm:"-"` // new
 }
 
+type FoodRecipeQuery struct {
+	Search string `form:"search"`
+	Page   int    `form:"page" binding:"required,min=1"`  // page number for pagination
+	Limit  int    `form:"limit" binding:"required,min=1"` // number of items per page
+}
+
 func (recipe FoodRecipe) FromRequest(request dto.FoodRecipeRequest) FoodRecipe {
 	return FoodRecipe{
 		Name:              request.Name,
@@ -56,7 +62,9 @@ func (recipe FoodRecipe) ToResponse() dto.FoodRecipeResponse {
 
 type FoodRecipes []FoodRecipe
 
-func (recipes FoodRecipes) ToResponse() dto.FoodRecipesResponse {
+func (recipes FoodRecipes) ToResponse(
+	total int64,
+) dto.FoodRecipesResponse {
 	var result = make([]dto.FoodRecipeResponse, 0)
 
 	for _, recipe := range recipes {
@@ -64,7 +72,8 @@ func (recipes FoodRecipes) ToResponse() dto.FoodRecipesResponse {
 	}
 
 	return dto.FoodRecipesResponse{
-		Total:   int64(len(recipes)),
-		Results: make([]dto.FoodRecipeResponse, len(recipes)),
+		// Total:   int64(len(recipes)),
+		Total:   total,
+		Results: result,
 	}
 }
