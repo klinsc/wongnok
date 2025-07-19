@@ -10,6 +10,7 @@ import (
 	"github.com/caarlos0/env/v11"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/klins/devpool/go-day6/wongnok/config"
 	"github.com/klins/devpool/go-day6/wongnok/internal/foodrecipe"
 	"github.com/klins/devpool/go-day6/wongnok/internal/rating"
@@ -40,6 +41,9 @@ func main() {
 
 	// Add this line to debug the loaded configuration
 	log.Printf("Attempting to connect with DSN: %s", conf.Database.URL)
+
+	// Print Keycloak configuration for debugging
+	log.Printf("Keycloak Configuration: %+v", conf.Keycloak)
 
 	// Database connection
 	db, err := gorm.Open(postgres.Open("postgres://postgres:pass2word@localhost:5432/wongnok?sslmode=disable"), &gorm.Config{
