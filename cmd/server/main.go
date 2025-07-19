@@ -69,22 +69,27 @@ func main() {
 	// Provider
 	provider, err := oidc.NewProvider(ctx, conf.Keycloak.RealmURL())
 	if err != nil {
-		log.Fatal("Error when make provider:", err)
+		log.Fatal("Error when create provider:", err)
 	}
 
 	// Handler
 	foodRecipeHandler := foodrecipe.NewHandler(db)
 	ratingHandler := rating.NewHandler(db)
-	authHandler := auth.NewHandler(&oauth2.Config{
-		ClientID:     conf.Keycloak.ClientID,
-		ClientSecret: conf.Keycloak.ClientSecret,
-		RedirectURL:  conf.Keycloak.RedirectURL,
-		Endpoint:     provider.Endpoint(),
-		Scopes: []string{
-			oidc.ScopeOpenID,
-			"profile",
-			"email",
-		}},
+	authHandler := auth.NewHandler(
+		db,
+		conf.Keycloak,
+		&oauth2.Config{
+			ClientID:     conf.Keycloak.ClientID,
+			ClientSecret: conf.Keycloak.ClientSecret,
+			RedirectURL:  conf.Keycloak.RedirectURL,
+			Endpoint:     provider.Endpoint(),
+			Scopes: []string{
+				oidc.ScopeOpenID,
+				"profile",
+				"email",
+			},
+		},
+		provider.Verifier(&oidc.Config{ClientID: conf.Keycloak.ClientID}),
 	)
 
 	// Router
@@ -102,6 +107,8 @@ func main() {
 
 	// Auth
 	group.GET("/login", authHandler.Login)
+	group.GET("/callback", authHandler.Callback)
+	group.GET("/logout", authHandler.Logout)
 
 	if err := router.Run(); err != nil {
 		log.Fatal("Server error:", err)
