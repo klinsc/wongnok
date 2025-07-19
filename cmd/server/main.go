@@ -3,17 +3,22 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 
 	"github.com/caarlos0/env/v11"
+	"github.com/coreos/go-oidc"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/klins/devpool/go-day6/wongnok/config"
+	"github.com/klins/devpool/go-day6/wongnok/internal/auth"
 	"github.com/klins/devpool/go-day6/wongnok/internal/foodrecipe"
 	"github.com/klins/devpool/go-day6/wongnok/internal/rating"
+	"golang.org/x/oauth2"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -31,6 +36,9 @@ func main() {
 	if err := godotenv.Load(".env"); err != nil {
 		log.Println("No .env file found or failed to load .env")
 	}
+
+	// Create go context
+	ctx := oidc.ClientContext(context.Background(), &http.Client{})
 
 	// Load configuration
 	var conf config.Config
@@ -58,9 +66,26 @@ func main() {
 		sqldb.Close()
 	}()
 
+	// Provider
+	provider, err := oidc.NewProvider(ctx, conf.Keycloak.RealmURL())
+	if err != nil {
+		log.Fatal("Error when make provider:", err)
+	}
+
 	// Handler
 	foodRecipeHandler := foodrecipe.NewHandler(db)
 	ratingHandler := rating.NewHandler(db)
+	authHandler := auth.NewHandler(&oauth2.Config{
+		ClientID:     conf.Keycloak.ClientID,
+		ClientSecret: conf.Keycloak.ClientSecret,
+		RedirectURL:  conf.Keycloak.RedirectURL,
+		Endpoint:     provider.Endpoint(),
+		Scopes: []string{
+			oidc.ScopeOpenID,
+			"profile",
+			"email",
+		}},
+	)
 
 	// Router
 	router := gin.Default()
@@ -74,6 +99,9 @@ func main() {
 	group.DELETE("/food-recipes/:id", foodRecipeHandler.Delete)
 	group.POST("/food-recipes/:id/ratings", ratingHandler.Create)
 	group.GET("/food-recipes/:id/ratings", ratingHandler.GetByID)
+
+	// Auth
+	group.GET("/login", authHandler.Login)
 
 	if err := router.Run(); err != nil {
 		log.Fatal("Server error:", err)
