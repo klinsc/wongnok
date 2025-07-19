@@ -18,7 +18,9 @@ import (
 	"github.com/klins/devpool/go-day6/wongnok/config"
 	"github.com/klins/devpool/go-day6/wongnok/internal/auth"
 	"github.com/klins/devpool/go-day6/wongnok/internal/foodrecipe"
+	"github.com/klins/devpool/go-day6/wongnok/internal/middleware"
 	"github.com/klins/devpool/go-day6/wongnok/internal/rating"
+	"github.com/klins/devpool/go-day6/wongnok/internal/user"
 	"golang.org/x/oauth2"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -72,6 +74,7 @@ func main() {
 	if err != nil {
 		log.Fatal("Error when create provider:", err)
 	}
+	verifierSkipClientCheck := provider.Verifier(&oidc.Config{SkipClientIDCheck: true})
 
 	// Handler
 	foodRecipeHandler := foodrecipe.NewHandler(db)
@@ -92,6 +95,7 @@ func main() {
 		},
 		provider.Verifier(&oidc.Config{ClientID: conf.Keycloak.ClientID}),
 	)
+	userHandler := user.NewHandler()
 
 	// Router
 	router := gin.Default()
@@ -113,6 +117,9 @@ func main() {
 	group.GET("/login", authHandler.Login)
 	group.GET("/callback", authHandler.Callback)
 	group.GET("/logout", authHandler.Logout)
+
+	// User
+	group.GET("/users/:id", middleware.Authorize(verifierSkipClientCheck), userHandler.GetRecipes)
 
 	if err := router.Run(); err != nil {
 		log.Fatal("Server error:", err)
