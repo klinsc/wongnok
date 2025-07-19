@@ -8,8 +8,11 @@ import (
 	"github.com/klins/devpool/go-day6/wongnok/config"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
+	"github.com/klins/devpool/go-day6/wongnok/internal/user"
 	"gorm.io/gorm"
 )
+
+type IUserService user.IService
 
 type IHandler interface {
 	Login(ctx *gin.Context)
@@ -18,12 +21,14 @@ type IHandler interface {
 }
 
 type Handler struct {
-	Service IService
+	Service     IService
+	UserService IUserService
 }
 
 func NewHandler(db *gorm.DB, kc config.Keycloak, oauth2Conf IOAuth2Config, verifier IOIDCTokenVerifier) IHandler {
 	return &Handler{
-		Service: NewService(kc, oauth2Conf, verifier),
+		Service:     NewService(kc, oauth2Conf, verifier),
+		UserService: user.NewService(db),
 	}
 }
 
@@ -73,6 +78,12 @@ func (handler Handler) Callback(ctx *gin.Context) {
 	var claims model.Claims
 	if err := idToken.Claims(&claims); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to parse token claims", "error": err.Error()})
+		return
+	}
+
+	// Ensure user exists in the database
+	if _, err := handler.UserService.UpsertWithClaims(claims); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": "Failed to upsert user", "error": err.Error()})
 		return
 	}
 

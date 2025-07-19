@@ -11,6 +11,7 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/coreos/go-oidc"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/joho/godotenv/autoload"
@@ -94,6 +95,9 @@ func main() {
 
 	// Router
 	router := gin.Default()
+
+	// Middleware
+	router.Use(cors.Default())
 
 	// Register route
 	group := router.Group("/api/v1")
