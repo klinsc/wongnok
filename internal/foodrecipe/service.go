@@ -9,12 +9,12 @@ import (
 )
 
 type IService interface {
-	Create(request dto.FoodRecipeRequest) (model.FoodRecipe, error)
+	Create(request dto.FoodRecipeRequest, claims model.Claims) (model.FoodRecipe, error)
+	Update(request dto.FoodRecipeRequest, id string, claims model.Claims) (model.FoodRecipe, error)
 	GetByID(id string) (model.FoodRecipe, error)
 	GetAll() ([]model.FoodRecipe, error)
 	Get(foodRecipeQuery model.FoodRecipeQuery) (model.FoodRecipes, int64, error)
 	Count() (int64, error)
-	Update(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error)
 	Delete(id int) error
 }
 
@@ -28,14 +28,14 @@ func NewService(db *gorm.DB) IService {
 	}
 }
 
-func (service Service) Create(request dto.FoodRecipeRequest) (model.FoodRecipe, error) {
+func (service Service) Create(request dto.FoodRecipeRequest, claims model.Claims) (model.FoodRecipe, error) {
 	validate := validator.New()
 	if err := validate.Struct(request); err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "request invalid")
 	}
 
 	var recipe model.FoodRecipe
-	recipe = recipe.FromRequest(request)
+	recipe = recipe.FromRequest(request, claims)
 
 	if err := service.Repository.Create(&recipe); err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "create recipe")
@@ -94,14 +94,14 @@ func (service Service) Count() (int64, error) {
 	return count, nil
 }
 
-func (service Service) Update(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error) {
+func (service Service) Update(request dto.FoodRecipeRequest, id string, claims model.Claims) (model.FoodRecipe, error) {
 	validate := validator.New()
 	if err := validate.Struct(request); err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "request invalid")
 	}
 	var recipe model.FoodRecipe
 
-	recipe = recipe.FromRequest(request)
+	recipe = recipe.FromRequest(request, claims)
 	if err := service.Repository.Update(id, &recipe); err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "update recipe")
 	}

@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/klins/devpool/go-day6/wongnok/internal/helper"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
 	"github.com/pkg/errors"
@@ -38,7 +39,13 @@ func (handler Handler) Create(ctx *gin.Context) {
 		return
 	}
 
-	recipe, err := handler.Service.Create(request)
+	claims, err := helper.DecodeClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	recipe, err := handler.Service.Create(request, claims)
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		if errors.As(err, &validator.ValidationErrors{}) {
@@ -115,7 +122,13 @@ func (handler Handler) Update(ctx *gin.Context) {
 		return
 	}
 
-	recipe, err := handler.Service.Update(id, request)
+	claims, err := helper.DecodeClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	recipe, err := handler.Service.Update(request, id, claims)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			ctx.JSON(http.StatusNotFound, gin.H{"message": "Recipe not found"})
