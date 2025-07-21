@@ -2,6 +2,7 @@ package foodrecipe
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/klins/devpool/go-day6/wongnok/internal/global"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
 	"github.com/pkg/errors"
@@ -102,9 +103,24 @@ func (service Service) Update(request dto.FoodRecipeRequest, id string, claims m
 	var recipe model.FoodRecipe
 
 	recipe = recipe.FromRequest(request, claims)
+
+	// Check if the recipe exists
+	existingRecipe, err := service.Repository.GetByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return model.FoodRecipe{}, global.ErrorNotFound
+		}
+		return model.FoodRecipe{}, global.ErrorInternalServer
+	}
+
+	if existingRecipe.UserID != claims.ID {
+		return model.FoodRecipe{}, global.ErrorForbidden
+	}
+
 	if err := service.Repository.Update(id, &recipe); err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "update recipe")
 	}
+
 	updatedRecipe, err := service.Repository.GetByID(id)
 	if err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "get updated recipe by ID")

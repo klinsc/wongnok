@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/klins/devpool/go-day6/wongnok/internal/global"
 	"github.com/klins/devpool/go-day6/wongnok/internal/helper"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
@@ -130,8 +131,13 @@ func (handler Handler) Update(ctx *gin.Context) {
 
 	recipe, err := handler.Service.Update(request, id, claims)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, global.ErrorNotFound) {
 			ctx.JSON(http.StatusNotFound, gin.H{"message": "Recipe not found"})
+			return
+		}
+
+		if errors.Is(err, global.ErrorForbidden) {
+			ctx.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to update this recipe"})
 			return
 		}
 
