@@ -149,17 +149,29 @@ func (handler Handler) Update(ctx *gin.Context) {
 }
 
 func (handler Handler) Delete(ctx *gin.Context) {
-	var id int
+	claims, err := helper.DecodeClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	var id string
 
 	pathParam := ctx.Param("id")
 	if pathParam != "" {
 		if parsed, err := strconv.Atoi(pathParam); err == nil && parsed > 0 {
-			id = parsed
+			id = strconv.Itoa(parsed)
 		}
 	}
 
-	if err := handler.Service.Delete(id); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+	if err := handler.Service.Delete(id, claims); err != nil {
+		statusCode := http.StatusInternalServerError
+
+		if errors.Is(err, global.ErrorForbidden) {
+			statusCode = http.StatusForbidden
+		}
+
+		ctx.JSON(statusCode, gin.H{"message": err.Error()})
 		return
 	}
 

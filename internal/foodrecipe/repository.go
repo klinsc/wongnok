@@ -1,8 +1,6 @@
 package foodrecipe
 
 import (
-	"errors"
-
 	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -15,7 +13,7 @@ type IRepository interface {
 	Get(query model.FoodRecipeQuery) (model.FoodRecipes, error)
 	Count() (int64, error)
 	Update(recipe *model.FoodRecipe) error
-	Delete(id int) error
+	Delete(id string) error
 }
 
 type Repository struct {
@@ -68,26 +66,14 @@ func (repo Repository) Count() (int64, error) {
 }
 
 func (repo Repository) Update(recipe *model.FoodRecipe) error {
-	result := repo.DB.Model(&model.FoodRecipe{}).Where("id = ?", recipe.ID).Updates(recipe)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("food recipe not found")
+	// update
+	if err := repo.DB.Model(&recipe).Updates(recipe).Error; err != nil {
+		return err
 	}
 
-	return nil
+	return repo.DB.Preload(clause.Associations).First(&recipe, recipe.ID).Error
 }
 
-func (repo Repository) Delete(id int) error {
-	result := repo.DB.Delete(&model.FoodRecipes{}, id)
-	if result.RowsAffected == 0 {
-		return errors.New("food recipe not found")
-	}
-
-	if result.Error != nil {
-		return result.Error
-	}
-
-	return nil
+func (repo Repository) Delete(id string) error {
+	return repo.DB.Delete(&model.FoodRecipes{}, id).Error
 }

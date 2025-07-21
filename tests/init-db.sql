@@ -94,3 +94,39 @@ VALUES
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP
     );
+
+-- ratings table
+CREATE TABLE
+    IF NOT EXISTS ratings (
+        id SERIAL PRIMARY KEY,
+        food_recipe_id INT NOT NULL REFERENCES food_recipes,
+        score INT NOT NULL,
+        user_id VARCHAR(100) NOT NULL REFERENCES users,
+        created_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL,
+        deleted_at TIMESTAMP
+    );
+
+INSERT INTO
+    ratings (
+        food_recipe_id,
+        score,
+        user_id,
+        created_at,
+        updated_at
+    )
+VALUES
+    (
+        1,
+        5,
+        '38fa4e9e-27de-42d5-a70f-9f01d41f32c2',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    ),
+    (
+        1,
+        3,
+        '38fa4e9e-27de-42d5-a70f-9f01d41f32c2',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    );

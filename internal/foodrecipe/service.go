@@ -16,7 +16,7 @@ type IService interface {
 	GetAll() ([]model.FoodRecipe, error)
 	Get(foodRecipeQuery model.FoodRecipeQuery) (model.FoodRecipes, int64, error)
 	Count() (int64, error)
-	Delete(id int) error
+	Delete(id string, claims model.Claims) error
 }
 
 type Service struct {
@@ -100,42 +100,44 @@ func (service Service) Update(request dto.FoodRecipeRequest, id string, claims m
 	if err := validate.Struct(request); err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "request invalid")
 	}
-	var recipe model.FoodRecipe
 
-	recipe = recipe.FromRequest(request, claims)
-
-	// Check if the recipe exists
-	existingRecipe, err := service.Repository.GetByID(id)
+	recipe, err := service.Repository.GetByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return model.FoodRecipe{}, global.ErrorNotFound
-		}
-		return model.FoodRecipe{}, global.ErrorInternalServer
+		// กรณีไม่พบ id ที่ต้องการ update
+		return model.FoodRecipe{}, errors.Wrap(err, "find recipe")
 	}
 
-	if existingRecipe.UserID != claims.ID {
+	if recipe.UserID != claims.ID {
+		// กรณี user ที่ login ไม่ตรงกับ user ที่สร้าง recipe
 		return model.FoodRecipe{}, global.ErrorForbidden
 	}
+
+	recipe = recipe.FromRequest(request, claims)
 
 	if err := service.Repository.Update(&recipe); err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "update recipe")
 	}
 
-	updatedRecipe, err := service.Repository.GetByID(id)
+	recipe = calculateAverageRating(recipe)
+
+	return recipe, nil
+}
+
+func (service Service) Delete(id string, claims model.Claims) error {
+	recipe, err := service.Repository.GetByID(id)
 	if err != nil {
-		return model.FoodRecipe{}, errors.Wrap(err, "get updated recipe by ID")
+		// กรณีไม่พบ id ที่ต้องการ update
+		return errors.Wrap(err, "find recipe")
+
 	}
 
-	// Calculate the average rating after updating
-	updatedRecipe = calculateAverageRating(updatedRecipe)
+	if recipe.UserID != claims.ID {
+		// กรณี user ที่ login ไม่ตรงกับ user ที่สร้าง recipe
+		return global.ErrorForbidden
+	}
 
-	return updatedRecipe, nil
-}
-
-func (service Service) Delete(id int) error {
 	return service.Repository.Delete(id)
 }
-
 func calculateAverageRating(recipe model.FoodRecipe) model.FoodRecipe {
 	if len(recipe.Ratings) > 0 {
 		var totalRating float64

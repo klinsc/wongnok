@@ -109,7 +109,7 @@ func main() {
 	group.GET("/food-recipes/:id", foodRecipeHandler.GetByID)
 	group.POST("/food-recipes", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Create)
 	group.PUT("/food-recipes/:id", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Update)
-	group.DELETE("/food-recipes/:id", foodRecipeHandler.Delete)
+	group.DELETE("/food-recipes/:id", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Delete)
 	group.POST("/food-recipes/:id/ratings", ratingHandler.Create)
 	group.GET("/food-recipes/:id/ratings", ratingHandler.GetByID)
 
