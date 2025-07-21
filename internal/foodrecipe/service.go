@@ -117,7 +117,7 @@ func (service Service) Update(request dto.FoodRecipeRequest, id string, claims m
 		return model.FoodRecipe{}, global.ErrorForbidden
 	}
 
-	if err := service.Repository.Update(id, &recipe); err != nil {
+	if err := service.Repository.Update(&recipe); err != nil {
 		return model.FoodRecipe{}, errors.Wrap(err, "update recipe")
 	}
 

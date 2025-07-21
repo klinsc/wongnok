@@ -14,7 +14,7 @@ type IRepository interface {
 	GetAll() ([]model.FoodRecipe, error)
 	Get(query model.FoodRecipeQuery) (model.FoodRecipes, error)
 	Count() (int64, error)
-	Update(id string, recipe *model.FoodRecipe) error
+	Update(recipe *model.FoodRecipe) error
 	Delete(id int) error
 }
 
@@ -67,8 +67,16 @@ func (repo Repository) Count() (int64, error) {
 	return count, err
 }
 
-func (repo Repository) Update(id string, recipe *model.FoodRecipe) error {
-	return repo.DB.Model(&model.FoodRecipe{}).Where("id = ?", id).Updates(recipe).Error
+func (repo Repository) Update(recipe *model.FoodRecipe) error {
+	result := repo.DB.Model(&model.FoodRecipe{}).Where("id = ?", recipe.ID).Updates(recipe)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("food recipe not found")
+	}
+
+	return nil
 }
 
 func (repo Repository) Delete(id int) error {

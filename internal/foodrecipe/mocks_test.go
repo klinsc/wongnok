@@ -598,16 +598,16 @@ func (_c *MockIRepository_GetByID_Call) RunAndReturn(run func(id string) (model.
 }
 
 // Update provides a mock function for the type MockIRepository
-func (_mock *MockIRepository) Update(id string, recipe *model.FoodRecipe) error {
-	ret := _mock.Called(id, recipe)
+func (_mock *MockIRepository) Update(recipe *model.FoodRecipe) error {
+	ret := _mock.Called(recipe)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Update")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(string, *model.FoodRecipe) error); ok {
-		r0 = returnFunc(id, recipe)
+	if returnFunc, ok := ret.Get(0).(func(*model.FoodRecipe) error); ok {
+		r0 = returnFunc(recipe)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -620,25 +620,19 @@ type MockIRepository_Update_Call struct {
 }
 
 // Update is a helper method to define mock.On call
-//   - id string
 //   - recipe *model.FoodRecipe
-func (_e *MockIRepository_Expecter) Update(id interface{}, recipe interface{}) *MockIRepository_Update_Call {
-	return &MockIRepository_Update_Call{Call: _e.mock.On("Update", id, recipe)}
+func (_e *MockIRepository_Expecter) Update(recipe interface{}) *MockIRepository_Update_Call {
+	return &MockIRepository_Update_Call{Call: _e.mock.On("Update", recipe)}
 }
 
-func (_c *MockIRepository_Update_Call) Run(run func(id string, recipe *model.FoodRecipe)) *MockIRepository_Update_Call {
+func (_c *MockIRepository_Update_Call) Run(run func(recipe *model.FoodRecipe)) *MockIRepository_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 *model.FoodRecipe
 		if args[0] != nil {
-			arg0 = args[0].(string)
-		}
-		var arg1 *model.FoodRecipe
-		if args[1] != nil {
-			arg1 = args[1].(*model.FoodRecipe)
+			arg0 = args[0].(*model.FoodRecipe)
 		}
 		run(
 			arg0,
-			arg1,
 		)
 	})
 	return _c
@@ -649,7 +643,7 @@ func (_c *MockIRepository_Update_Call) Return(err error) *MockIRepository_Update
 	return _c
 }
 
-func (_c *MockIRepository_Update_Call) RunAndReturn(run func(id string, recipe *model.FoodRecipe) error) *MockIRepository_Update_Call {
+func (_c *MockIRepository_Update_Call) RunAndReturn(run func(recipe *model.FoodRecipe) error) *MockIRepository_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }
