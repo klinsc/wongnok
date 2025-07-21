@@ -62,6 +62,10 @@ func (suite *ServiceCreateTestSuite) SetupTest() {
 }
 
 func (suite *ServiceCreateTestSuite) TestReturnRecipeCreated() {
+	claims := model.Claims{
+		ID: "user-id",
+	}
+
 	expectedRecipe := model.FoodRecipe{
 		Name:              "Name",
 		Description:       "Description",
@@ -69,6 +73,7 @@ func (suite *ServiceCreateTestSuite) TestReturnRecipeCreated() {
 		Instruction:       "Instruction",
 		CookingDurationID: 1,
 		DifficultyID:      1,
+		UserID:            "user-id", // new, set the user ID from claims
 	}
 
 	recipe, err := suite.service.Create(dto.FoodRecipeRequest{
@@ -78,7 +83,7 @@ func (suite *ServiceCreateTestSuite) TestReturnRecipeCreated() {
 		Instruction:       "Instruction",
 		CookingDurationID: 1,
 		DifficultyID:      1,
-	})
+	}, claims)
 	suite.NoError(err)
 
 	suite.Equal(expectedRecipe, recipe)
@@ -89,11 +94,16 @@ func (suite *ServiceCreateTestSuite) TestReturnRecipeCreated() {
 		Instruction:       "Instruction",
 		CookingDurationID: 1,
 		DifficultyID:      1,
+		UserID:            "user-id", // new, set the user ID from claims
 	})
 }
 
 func (suite *ServiceCreateTestSuite) TestErrorWhenRequestValidate() {
-	recipe, err := suite.service.Create(dto.FoodRecipeRequest{})
+	claims := model.Claims{
+		ID: "user-id",
+	}
+
+	recipe, err := suite.service.Create(dto.FoodRecipeRequest{}, claims)
 	suite.Error(err)
 	suite.True(strings.HasPrefix(err.Error(), "request invalid"))
 
@@ -102,6 +112,10 @@ func (suite *ServiceCreateTestSuite) TestErrorWhenRequestValidate() {
 }
 
 func (suite *ServiceCreateTestSuite) TestErrorWhenRepositoryCreate() {
+	claims := model.Claims{
+		ID: "user-id",
+	}
+
 	suite.errRepositoryCreate = assert.AnError
 
 	request := dto.FoodRecipeRequest{
@@ -112,7 +126,7 @@ func (suite *ServiceCreateTestSuite) TestErrorWhenRepositoryCreate() {
 		CookingDurationID: 1,
 		DifficultyID:      1,
 	}
-	recipe, err := suite.service.Create(request)
+	recipe, err := suite.service.Create(request, claims)
 	suite.Error(err)
 	suite.EqualError(err, "create recipe: "+assert.AnError.Error())
 

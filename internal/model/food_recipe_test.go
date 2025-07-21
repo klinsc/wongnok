@@ -11,6 +11,10 @@ import (
 )
 
 func TestFoodRecipeFromRequest(t *testing.T) {
+	claims := model.Claims{
+		ID: "user-id",
+	}
+
 	t.Run("ShouldSetFoodRecipeModelFromRequest", func(t *testing.T) {
 		imageURL := "http://example.com/image.jpg"
 
@@ -24,7 +28,7 @@ func TestFoodRecipeFromRequest(t *testing.T) {
 			DifficultyID:      2,
 		}
 
-		recipe := model.FoodRecipe{}.FromRequest(request)
+		recipe := model.FoodRecipe{}.FromRequest(request, claims)
 
 		expected := model.FoodRecipe{
 			Name:              "Test Recipe",
