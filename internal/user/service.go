@@ -9,6 +9,7 @@ import (
 
 type IService interface {
 	UpsertWithClaims(claims model.Claims) (model.User, error)
+	GetByID(id string) (model.User, error)
 }
 
 type Service struct {
@@ -39,6 +40,15 @@ func (service Service) UpsertWithClaims(claims model.Claims) (model.User, error)
 	// Upsert user
 	if err := service.Repository.Upsert(&user); err != nil {
 		return model.User{}, errors.Wrap(err, "upsert user")
+	}
+
+	return user, nil
+}
+
+func (service Service) GetByID(id string) (model.User, error) {
+	user, err := service.Repository.GetByID(id)
+	if err != nil {
+		return model.User{}, errors.Wrap(err, "get user by ID")
 	}
 
 	return user, nil

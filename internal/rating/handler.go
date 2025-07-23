@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/klins/devpool/go-day6/wongnok/internal/helper"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
 	"gorm.io/gorm"
 )
@@ -42,7 +43,13 @@ func (handler Handler) Create(ctx *gin.Context) {
 		return
 	}
 
-	rating, err := handler.Service.Create(request, id)
+	claims, err := helper.DecodeClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized"})
+		return
+	}
+
+	rating, err := handler.Service.Create(request, id, claims)
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		if errors.As(err, &validator.ValidationErrors{}) {

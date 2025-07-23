@@ -110,7 +110,7 @@ func main() {
 	group.POST("/food-recipes", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Create)
 	group.PUT("/food-recipes/:id", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Update)
 	group.DELETE("/food-recipes/:id", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Delete)
-	group.POST("/food-recipes/:id/ratings", ratingHandler.Create)
+	group.POST("/food-recipes/:id/ratings", middleware.Authorize(verifierSkipClientCheck), ratingHandler.Create)
 	group.GET("/food-recipes/:id/ratings", ratingHandler.GetByID)
 
 	// Auth
