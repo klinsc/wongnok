@@ -1,8 +1,11 @@
 package user
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/klins/devpool/go-day6/wongnok/internal/helper"
+	"gorm.io/gorm"
 )
 
 type IHandler interface {
@@ -10,24 +13,29 @@ type IHandler interface {
 }
 
 type Handler struct {
+	Service IService
 }
 
-func NewHandler() IHandler {
-	return &Handler{}
+func NewHandler(db *gorm.DB) IHandler {
+	return &Handler{
+		Service: NewService(db),
+	}
 }
 
 func (handler Handler) GetRecipes(ctx *gin.Context) {
-	// tokenWithBearer := ctx.GetHeader("Authorization")
-	// fmt.Println("Token with Bearer:", tokenWithBearer
+	userID := ctx.Param("id")
 
 	claims, err := helper.DecodeClaims(ctx)
 	if err != nil {
-		ctx.JSON(400, gin.H{"message": "Invalid token"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		return
 	}
 
-	ctx.JSON(200, gin.H{
-		"message": "User recipes",
-		"user_id": claims.ID,
-	})
+	recipes, err := handler.Service.GetRecipes(userID, claims)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, recipes.ToResponse(int64(len(recipes))))
 }

@@ -3,6 +3,7 @@ package foodrecipe
 import (
 	"github.com/go-playground/validator/v10"
 	"github.com/klins/devpool/go-day6/wongnok/internal/global"
+	"github.com/klins/devpool/go-day6/wongnok/internal/helper"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
 	"github.com/pkg/errors"
@@ -52,7 +53,7 @@ func (service Service) GetByID(id string) (model.FoodRecipe, error) {
 	}
 
 	// Calculate the average rating for the recipe
-	recipe = calculateAverageRating(recipe)
+	recipe = helper.CalculateAverageRating(recipe)
 
 	return recipe, nil
 }
@@ -65,7 +66,7 @@ func (service Service) GetAll() ([]model.FoodRecipe, error) {
 
 	// Calculate the average rating for each recipe
 	for i, recipe := range recipes {
-		recipes[i] = calculateAverageRating(recipe)
+		recipes[i] = helper.CalculateAverageRating(recipe)
 	}
 
 	return recipes, nil
@@ -82,7 +83,7 @@ func (service Service) Get(foodRecipeQuery model.FoodRecipeQuery) (model.FoodRec
 		return nil, 0, err
 	}
 
-	results = calculateAverageRatings(results)
+	results = helper.CalculateAverageRatings(results)
 
 	return results, total, nil
 }
@@ -118,7 +119,7 @@ func (service Service) Update(request dto.FoodRecipeRequest, id string, claims m
 		return model.FoodRecipe{}, errors.Wrap(err, "update recipe")
 	}
 
-	recipe = calculateAverageRating(recipe)
+	recipe = helper.CalculateAverageRating(recipe)
 
 	return recipe, nil
 }
@@ -137,31 +138,4 @@ func (service Service) Delete(id string, claims model.Claims) error {
 	}
 
 	return service.Repository.Delete(id)
-}
-func calculateAverageRating(recipe model.FoodRecipe) model.FoodRecipe {
-	if len(recipe.Ratings) > 0 {
-		var totalRating float64
-		for _, rating := range recipe.Ratings {
-			totalRating += rating.Score
-		}
-		recipe.AverageRating = totalRating / float64(len(recipe.Ratings))
-	} else {
-		recipe.AverageRating = 0
-	}
-	return recipe
-}
-
-func calculateAverageRatings(recipes model.FoodRecipes) model.FoodRecipes {
-	for i, recipe := range recipes {
-		if len(recipe.Ratings) > 0 {
-			var totalRating float64
-			for _, rating := range recipe.Ratings {
-				totalRating += rating.Score
-			}
-			recipes[i].AverageRating = totalRating / float64(len(recipe.Ratings))
-		} else {
-			recipes[i].AverageRating = 0
-		}
-	}
-	return recipes
 }

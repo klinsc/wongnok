@@ -95,7 +95,7 @@ func main() {
 		},
 		provider.Verifier(&oidc.Config{ClientID: conf.Keycloak.ClientID}),
 	)
-	userHandler := user.NewHandler()
+	userHandler := user.NewHandler(db)
 
 	// Router
 	router := gin.Default()
@@ -119,7 +119,7 @@ func main() {
 	group.GET("/logout", authHandler.Logout)
 
 	// User
-	group.GET("/users/:id", middleware.Authorize(verifierSkipClientCheck), userHandler.GetRecipes)
+	group.GET("/users/:id/food-recipes", middleware.Authorize(verifierSkipClientCheck), userHandler.GetRecipes)
 
 	if err := router.Run(); err != nil {
 		log.Fatal("Server error:", err)

@@ -2,6 +2,7 @@ package user
 
 import (
 	"github.com/go-playground/validator/v10"
+	"github.com/klins/devpool/go-day6/wongnok/internal/helper"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
@@ -10,6 +11,7 @@ import (
 type IService interface {
 	UpsertWithClaims(claims model.Claims) (model.User, error)
 	GetByID(id string) (model.User, error)
+	GetRecipes(userID string, claims model.Claims) (model.FoodRecipes, error)
 }
 
 type Service struct {
@@ -52,4 +54,19 @@ func (service Service) GetByID(id string) (model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (service Service) GetRecipes(userID string, claims model.Claims) (model.FoodRecipes, error) {
+	if _, err := service.Repository.GetByID(claims.ID); err != nil {
+		return model.FoodRecipes{}, errors.Wrap(err, "find user")
+	}
+
+	foodRecipes, err := service.Repository.GetRecipes(userID)
+	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+		return model.FoodRecipes{}, errors.Wrap(err, "get recipes")
+	}
+
+	foodRecipes = helper.CalculateAverageRatings(foodRecipes)
+
+	return foodRecipes, nil
 }
