@@ -10,5 +10,6 @@ type UserResponse struct {
 type UserRequest struct {
 	FirstName string `json:"firstName" validate:"required"`
 	LastName  string `json:"lastName" validate:"required"`
-	ImageURL  string `json:"imageUrl" validate:"url"`
+	// allow empty string to clear the image URL
+	ImageURL string `json:"imageUrl"`
 }
