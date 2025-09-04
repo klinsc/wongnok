@@ -101,7 +101,13 @@ func main() {
 	router := gin.Default()
 
 	// Middleware
-	router.Use(cors.Default())
+	// router.Use(cors.Default())
+	// allow all origins
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+	}))
 
 	// Register route
 	group := router.Group("/api/v1")
