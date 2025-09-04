@@ -126,6 +126,7 @@ func main() {
 
 	// User
 	group.GET("/users/:id", userHandler.GetByID)
+	group.PUT("/users/:id", middleware.Authorize(verifierSkipClientCheck), userHandler.Update)
 	group.GET("/users/:id/food-recipes", middleware.Authorize(verifierSkipClientCheck), userHandler.GetRecipes)
 
 	if err := router.Run(); err != nil {

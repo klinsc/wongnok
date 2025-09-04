@@ -10,6 +10,7 @@ type User struct {
 	ID        string
 	FirstName string
 	LastName  string
+	ImageURL  string
 }
 
 func (user User) FromClaims(claims Claims) User {
@@ -26,5 +27,16 @@ func (user User) ToResponse() dto.UserResponse {
 		ID:        user.ID,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
+		ImageURL:  user.ImageURL,
+	}
+}
+
+func (user User) FromRequest(request dto.UserRequest) User {
+	return User{
+		Model:     user.Model,
+		ID:        user.ID,
+		FirstName: request.FirstName,
+		LastName:  request.LastName,
+		ImageURL:  request.ImageURL,
 	}
 }

@@ -10,6 +10,7 @@ type IRepository interface {
 	GetByID(id string) (model.User, error)
 	Upsert(user *model.User) error
 	GetRecipes(userID string) (model.FoodRecipes, error)
+	Update(user *model.User) error
 }
 
 type Repository struct {
@@ -40,4 +41,8 @@ func (repo Repository) GetRecipes(userID string) (model.FoodRecipes, error) {
 	}
 
 	return recipes, nil
+}
+
+func (repo Repository) Update(user *model.User) error {
+	return repo.DB.Save(user).Error
 }
