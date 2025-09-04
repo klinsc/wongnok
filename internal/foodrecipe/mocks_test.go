@@ -370,7 +370,7 @@ func (_c *MockIRepository_Create_Call) RunAndReturn(run func(recipe *model.FoodR
 }
 
 // Delete provides a mock function for the type MockIRepository
-func (_mock *MockIRepository) Delete(id int) error {
+func (_mock *MockIRepository) Delete(id string) error {
 	ret := _mock.Called(id)
 
 	if len(ret) == 0 {
@@ -378,7 +378,7 @@ func (_mock *MockIRepository) Delete(id int) error {
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(int) error); ok {
+	if returnFunc, ok := ret.Get(0).(func(string) error); ok {
 		r0 = returnFunc(id)
 	} else {
 		r0 = ret.Error(0)
@@ -392,16 +392,16 @@ type MockIRepository_Delete_Call struct {
 }
 
 // Delete is a helper method to define mock.On call
-//   - id int
+//   - id string
 func (_e *MockIRepository_Expecter) Delete(id interface{}) *MockIRepository_Delete_Call {
 	return &MockIRepository_Delete_Call{Call: _e.mock.On("Delete", id)}
 }
 
-func (_c *MockIRepository_Delete_Call) Run(run func(id int)) *MockIRepository_Delete_Call {
+func (_c *MockIRepository_Delete_Call) Run(run func(id string)) *MockIRepository_Delete_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 int
+		var arg0 string
 		if args[0] != nil {
-			arg0 = args[0].(int)
+			arg0 = args[0].(string)
 		}
 		run(
 			arg0,
@@ -415,14 +415,14 @@ func (_c *MockIRepository_Delete_Call) Return(err error) *MockIRepository_Delete
 	return _c
 }
 
-func (_c *MockIRepository_Delete_Call) RunAndReturn(run func(id int) error) *MockIRepository_Delete_Call {
+func (_c *MockIRepository_Delete_Call) RunAndReturn(run func(id string) error) *MockIRepository_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // Get provides a mock function for the type MockIRepository
-func (_mock *MockIRepository) Get() (model.FoodRecipes, error) {
-	ret := _mock.Called()
+func (_mock *MockIRepository) Get(query model.FoodRecipeQuery) (model.FoodRecipes, error) {
+	ret := _mock.Called(query)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Get")
@@ -430,18 +430,18 @@ func (_mock *MockIRepository) Get() (model.FoodRecipes, error) {
 
 	var r0 model.FoodRecipes
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func() (model.FoodRecipes, error)); ok {
-		return returnFunc()
+	if returnFunc, ok := ret.Get(0).(func(model.FoodRecipeQuery) (model.FoodRecipes, error)); ok {
+		return returnFunc(query)
 	}
-	if returnFunc, ok := ret.Get(0).(func() model.FoodRecipes); ok {
-		r0 = returnFunc()
+	if returnFunc, ok := ret.Get(0).(func(model.FoodRecipeQuery) model.FoodRecipes); ok {
+		r0 = returnFunc(query)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(model.FoodRecipes)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func() error); ok {
-		r1 = returnFunc()
+	if returnFunc, ok := ret.Get(1).(func(model.FoodRecipeQuery) error); ok {
+		r1 = returnFunc(query)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -454,13 +454,20 @@ type MockIRepository_Get_Call struct {
 }
 
 // Get is a helper method to define mock.On call
-func (_e *MockIRepository_Expecter) Get() *MockIRepository_Get_Call {
-	return &MockIRepository_Get_Call{Call: _e.mock.On("Get")}
+//   - query model.FoodRecipeQuery
+func (_e *MockIRepository_Expecter) Get(query interface{}) *MockIRepository_Get_Call {
+	return &MockIRepository_Get_Call{Call: _e.mock.On("Get", query)}
 }
 
-func (_c *MockIRepository_Get_Call) Run(run func()) *MockIRepository_Get_Call {
+func (_c *MockIRepository_Get_Call) Run(run func(query model.FoodRecipeQuery)) *MockIRepository_Get_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run()
+		var arg0 model.FoodRecipeQuery
+		if args[0] != nil {
+			arg0 = args[0].(model.FoodRecipeQuery)
+		}
+		run(
+			arg0,
+		)
 	})
 	return _c
 }
@@ -470,7 +477,7 @@ func (_c *MockIRepository_Get_Call) Return(foodRecipes model.FoodRecipes, err er
 	return _c
 }
 
-func (_c *MockIRepository_Get_Call) RunAndReturn(run func() (model.FoodRecipes, error)) *MockIRepository_Get_Call {
+func (_c *MockIRepository_Get_Call) RunAndReturn(run func(query model.FoodRecipeQuery) (model.FoodRecipes, error)) *MockIRepository_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -591,16 +598,16 @@ func (_c *MockIRepository_GetByID_Call) RunAndReturn(run func(id string) (model.
 }
 
 // Update provides a mock function for the type MockIRepository
-func (_mock *MockIRepository) Update(id string, recipe *model.FoodRecipe) error {
-	ret := _mock.Called(id, recipe)
+func (_mock *MockIRepository) Update(recipe *model.FoodRecipe) error {
+	ret := _mock.Called(recipe)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Update")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(string, *model.FoodRecipe) error); ok {
-		r0 = returnFunc(id, recipe)
+	if returnFunc, ok := ret.Get(0).(func(*model.FoodRecipe) error); ok {
+		r0 = returnFunc(recipe)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -613,25 +620,19 @@ type MockIRepository_Update_Call struct {
 }
 
 // Update is a helper method to define mock.On call
-//   - id string
 //   - recipe *model.FoodRecipe
-func (_e *MockIRepository_Expecter) Update(id interface{}, recipe interface{}) *MockIRepository_Update_Call {
-	return &MockIRepository_Update_Call{Call: _e.mock.On("Update", id, recipe)}
+func (_e *MockIRepository_Expecter) Update(recipe interface{}) *MockIRepository_Update_Call {
+	return &MockIRepository_Update_Call{Call: _e.mock.On("Update", recipe)}
 }
 
-func (_c *MockIRepository_Update_Call) Run(run func(id string, recipe *model.FoodRecipe)) *MockIRepository_Update_Call {
+func (_c *MockIRepository_Update_Call) Run(run func(recipe *model.FoodRecipe)) *MockIRepository_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 *model.FoodRecipe
 		if args[0] != nil {
-			arg0 = args[0].(string)
-		}
-		var arg1 *model.FoodRecipe
-		if args[1] != nil {
-			arg1 = args[1].(*model.FoodRecipe)
+			arg0 = args[0].(*model.FoodRecipe)
 		}
 		run(
 			arg0,
-			arg1,
 		)
 	})
 	return _c
@@ -642,7 +643,7 @@ func (_c *MockIRepository_Update_Call) Return(err error) *MockIRepository_Update
 	return _c
 }
 
-func (_c *MockIRepository_Update_Call) RunAndReturn(run func(id string, recipe *model.FoodRecipe) error) *MockIRepository_Update_Call {
+func (_c *MockIRepository_Update_Call) RunAndReturn(run func(recipe *model.FoodRecipe) error) *MockIRepository_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -728,8 +729,8 @@ func (_c *MockIService_Count_Call) RunAndReturn(run func() (int64, error)) *Mock
 }
 
 // Create provides a mock function for the type MockIService
-func (_mock *MockIService) Create(request dto.FoodRecipeRequest) (model.FoodRecipe, error) {
-	ret := _mock.Called(request)
+func (_mock *MockIService) Create(request dto.FoodRecipeRequest, claims model.Claims) (model.FoodRecipe, error) {
+	ret := _mock.Called(request, claims)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Create")
@@ -737,16 +738,16 @@ func (_mock *MockIService) Create(request dto.FoodRecipeRequest) (model.FoodReci
 
 	var r0 model.FoodRecipe
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(dto.FoodRecipeRequest) (model.FoodRecipe, error)); ok {
-		return returnFunc(request)
+	if returnFunc, ok := ret.Get(0).(func(dto.FoodRecipeRequest, model.Claims) (model.FoodRecipe, error)); ok {
+		return returnFunc(request, claims)
 	}
-	if returnFunc, ok := ret.Get(0).(func(dto.FoodRecipeRequest) model.FoodRecipe); ok {
-		r0 = returnFunc(request)
+	if returnFunc, ok := ret.Get(0).(func(dto.FoodRecipeRequest, model.Claims) model.FoodRecipe); ok {
+		r0 = returnFunc(request, claims)
 	} else {
 		r0 = ret.Get(0).(model.FoodRecipe)
 	}
-	if returnFunc, ok := ret.Get(1).(func(dto.FoodRecipeRequest) error); ok {
-		r1 = returnFunc(request)
+	if returnFunc, ok := ret.Get(1).(func(dto.FoodRecipeRequest, model.Claims) error); ok {
+		r1 = returnFunc(request, claims)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -760,18 +761,24 @@ type MockIService_Create_Call struct {
 
 // Create is a helper method to define mock.On call
 //   - request dto.FoodRecipeRequest
-func (_e *MockIService_Expecter) Create(request interface{}) *MockIService_Create_Call {
-	return &MockIService_Create_Call{Call: _e.mock.On("Create", request)}
+//   - claims model.Claims
+func (_e *MockIService_Expecter) Create(request interface{}, claims interface{}) *MockIService_Create_Call {
+	return &MockIService_Create_Call{Call: _e.mock.On("Create", request, claims)}
 }
 
-func (_c *MockIService_Create_Call) Run(run func(request dto.FoodRecipeRequest)) *MockIService_Create_Call {
+func (_c *MockIService_Create_Call) Run(run func(request dto.FoodRecipeRequest, claims model.Claims)) *MockIService_Create_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 dto.FoodRecipeRequest
 		if args[0] != nil {
 			arg0 = args[0].(dto.FoodRecipeRequest)
 		}
+		var arg1 model.Claims
+		if args[1] != nil {
+			arg1 = args[1].(model.Claims)
+		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -782,22 +789,22 @@ func (_c *MockIService_Create_Call) Return(foodRecipe model.FoodRecipe, err erro
 	return _c
 }
 
-func (_c *MockIService_Create_Call) RunAndReturn(run func(request dto.FoodRecipeRequest) (model.FoodRecipe, error)) *MockIService_Create_Call {
+func (_c *MockIService_Create_Call) RunAndReturn(run func(request dto.FoodRecipeRequest, claims model.Claims) (model.FoodRecipe, error)) *MockIService_Create_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // Delete provides a mock function for the type MockIService
-func (_mock *MockIService) Delete(id int) error {
-	ret := _mock.Called(id)
+func (_mock *MockIService) Delete(id string, claims model.Claims) error {
+	ret := _mock.Called(id, claims)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Delete")
 	}
 
 	var r0 error
-	if returnFunc, ok := ret.Get(0).(func(int) error); ok {
-		r0 = returnFunc(id)
+	if returnFunc, ok := ret.Get(0).(func(string, model.Claims) error); ok {
+		r0 = returnFunc(id, claims)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -810,19 +817,25 @@ type MockIService_Delete_Call struct {
 }
 
 // Delete is a helper method to define mock.On call
-//   - id int
-func (_e *MockIService_Expecter) Delete(id interface{}) *MockIService_Delete_Call {
-	return &MockIService_Delete_Call{Call: _e.mock.On("Delete", id)}
+//   - id string
+//   - claims model.Claims
+func (_e *MockIService_Expecter) Delete(id interface{}, claims interface{}) *MockIService_Delete_Call {
+	return &MockIService_Delete_Call{Call: _e.mock.On("Delete", id, claims)}
 }
 
-func (_c *MockIService_Delete_Call) Run(run func(id int)) *MockIService_Delete_Call {
+func (_c *MockIService_Delete_Call) Run(run func(id string, claims model.Claims)) *MockIService_Delete_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 int
+		var arg0 string
 		if args[0] != nil {
-			arg0 = args[0].(int)
+			arg0 = args[0].(string)
+		}
+		var arg1 model.Claims
+		if args[1] != nil {
+			arg1 = args[1].(model.Claims)
 		}
 		run(
 			arg0,
+			arg1,
 		)
 	})
 	return _c
@@ -833,14 +846,14 @@ func (_c *MockIService_Delete_Call) Return(err error) *MockIService_Delete_Call 
 	return _c
 }
 
-func (_c *MockIService_Delete_Call) RunAndReturn(run func(id int) error) *MockIService_Delete_Call {
+func (_c *MockIService_Delete_Call) RunAndReturn(run func(id string, claims model.Claims) error) *MockIService_Delete_Call {
 	_c.Call.Return(run)
 	return _c
 }
 
 // Get provides a mock function for the type MockIService
-func (_mock *MockIService) Get() (model.FoodRecipes, int64, error) {
-	ret := _mock.Called()
+func (_mock *MockIService) Get(foodRecipeQuery model.FoodRecipeQuery) (model.FoodRecipes, int64, error) {
+	ret := _mock.Called(foodRecipeQuery)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Get")
@@ -849,23 +862,23 @@ func (_mock *MockIService) Get() (model.FoodRecipes, int64, error) {
 	var r0 model.FoodRecipes
 	var r1 int64
 	var r2 error
-	if returnFunc, ok := ret.Get(0).(func() (model.FoodRecipes, int64, error)); ok {
-		return returnFunc()
+	if returnFunc, ok := ret.Get(0).(func(model.FoodRecipeQuery) (model.FoodRecipes, int64, error)); ok {
+		return returnFunc(foodRecipeQuery)
 	}
-	if returnFunc, ok := ret.Get(0).(func() model.FoodRecipes); ok {
-		r0 = returnFunc()
+	if returnFunc, ok := ret.Get(0).(func(model.FoodRecipeQuery) model.FoodRecipes); ok {
+		r0 = returnFunc(foodRecipeQuery)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(model.FoodRecipes)
 		}
 	}
-	if returnFunc, ok := ret.Get(1).(func() int64); ok {
-		r1 = returnFunc()
+	if returnFunc, ok := ret.Get(1).(func(model.FoodRecipeQuery) int64); ok {
+		r1 = returnFunc(foodRecipeQuery)
 	} else {
 		r1 = ret.Get(1).(int64)
 	}
-	if returnFunc, ok := ret.Get(2).(func() error); ok {
-		r2 = returnFunc()
+	if returnFunc, ok := ret.Get(2).(func(model.FoodRecipeQuery) error); ok {
+		r2 = returnFunc(foodRecipeQuery)
 	} else {
 		r2 = ret.Error(2)
 	}
@@ -878,13 +891,20 @@ type MockIService_Get_Call struct {
 }
 
 // Get is a helper method to define mock.On call
-func (_e *MockIService_Expecter) Get() *MockIService_Get_Call {
-	return &MockIService_Get_Call{Call: _e.mock.On("Get")}
+//   - foodRecipeQuery model.FoodRecipeQuery
+func (_e *MockIService_Expecter) Get(foodRecipeQuery interface{}) *MockIService_Get_Call {
+	return &MockIService_Get_Call{Call: _e.mock.On("Get", foodRecipeQuery)}
 }
 
-func (_c *MockIService_Get_Call) Run(run func()) *MockIService_Get_Call {
+func (_c *MockIService_Get_Call) Run(run func(foodRecipeQuery model.FoodRecipeQuery)) *MockIService_Get_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		run()
+		var arg0 model.FoodRecipeQuery
+		if args[0] != nil {
+			arg0 = args[0].(model.FoodRecipeQuery)
+		}
+		run(
+			arg0,
+		)
 	})
 	return _c
 }
@@ -894,7 +914,7 @@ func (_c *MockIService_Get_Call) Return(foodRecipes model.FoodRecipes, n int64, 
 	return _c
 }
 
-func (_c *MockIService_Get_Call) RunAndReturn(run func() (model.FoodRecipes, int64, error)) *MockIService_Get_Call {
+func (_c *MockIService_Get_Call) RunAndReturn(run func(foodRecipeQuery model.FoodRecipeQuery) (model.FoodRecipes, int64, error)) *MockIService_Get_Call {
 	_c.Call.Return(run)
 	return _c
 }
@@ -1015,8 +1035,8 @@ func (_c *MockIService_GetByID_Call) RunAndReturn(run func(id string) (model.Foo
 }
 
 // Update provides a mock function for the type MockIService
-func (_mock *MockIService) Update(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error) {
-	ret := _mock.Called(id, request)
+func (_mock *MockIService) Update(request dto.FoodRecipeRequest, id string, claims model.Claims) (model.FoodRecipe, error) {
+	ret := _mock.Called(request, id, claims)
 
 	if len(ret) == 0 {
 		panic("no return value specified for Update")
@@ -1024,16 +1044,16 @@ func (_mock *MockIService) Update(id string, request dto.FoodRecipeRequest) (mod
 
 	var r0 model.FoodRecipe
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(string, dto.FoodRecipeRequest) (model.FoodRecipe, error)); ok {
-		return returnFunc(id, request)
+	if returnFunc, ok := ret.Get(0).(func(dto.FoodRecipeRequest, string, model.Claims) (model.FoodRecipe, error)); ok {
+		return returnFunc(request, id, claims)
 	}
-	if returnFunc, ok := ret.Get(0).(func(string, dto.FoodRecipeRequest) model.FoodRecipe); ok {
-		r0 = returnFunc(id, request)
+	if returnFunc, ok := ret.Get(0).(func(dto.FoodRecipeRequest, string, model.Claims) model.FoodRecipe); ok {
+		r0 = returnFunc(request, id, claims)
 	} else {
 		r0 = ret.Get(0).(model.FoodRecipe)
 	}
-	if returnFunc, ok := ret.Get(1).(func(string, dto.FoodRecipeRequest) error); ok {
-		r1 = returnFunc(id, request)
+	if returnFunc, ok := ret.Get(1).(func(dto.FoodRecipeRequest, string, model.Claims) error); ok {
+		r1 = returnFunc(request, id, claims)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1046,25 +1066,31 @@ type MockIService_Update_Call struct {
 }
 
 // Update is a helper method to define mock.On call
-//   - id string
 //   - request dto.FoodRecipeRequest
-func (_e *MockIService_Expecter) Update(id interface{}, request interface{}) *MockIService_Update_Call {
-	return &MockIService_Update_Call{Call: _e.mock.On("Update", id, request)}
+//   - id string
+//   - claims model.Claims
+func (_e *MockIService_Expecter) Update(request interface{}, id interface{}, claims interface{}) *MockIService_Update_Call {
+	return &MockIService_Update_Call{Call: _e.mock.On("Update", request, id, claims)}
 }
 
-func (_c *MockIService_Update_Call) Run(run func(id string, request dto.FoodRecipeRequest)) *MockIService_Update_Call {
+func (_c *MockIService_Update_Call) Run(run func(request dto.FoodRecipeRequest, id string, claims model.Claims)) *MockIService_Update_Call {
 	_c.Call.Run(func(args mock.Arguments) {
-		var arg0 string
+		var arg0 dto.FoodRecipeRequest
 		if args[0] != nil {
-			arg0 = args[0].(string)
+			arg0 = args[0].(dto.FoodRecipeRequest)
 		}
-		var arg1 dto.FoodRecipeRequest
+		var arg1 string
 		if args[1] != nil {
-			arg1 = args[1].(dto.FoodRecipeRequest)
+			arg1 = args[1].(string)
+		}
+		var arg2 model.Claims
+		if args[2] != nil {
+			arg2 = args[2].(model.Claims)
 		}
 		run(
 			arg0,
 			arg1,
+			arg2,
 		)
 	})
 	return _c
@@ -1075,7 +1101,7 @@ func (_c *MockIService_Update_Call) Return(foodRecipe model.FoodRecipe, err erro
 	return _c
 }
 
-func (_c *MockIService_Update_Call) RunAndReturn(run func(id string, request dto.FoodRecipeRequest) (model.FoodRecipe, error)) *MockIService_Update_Call {
+func (_c *MockIService_Update_Call) RunAndReturn(run func(request dto.FoodRecipeRequest, id string, claims model.Claims) (model.FoodRecipe, error)) *MockIService_Update_Call {
 	_c.Call.Return(run)
 	return _c
 }

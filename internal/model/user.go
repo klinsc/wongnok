@@ -1,6 +1,9 @@
 package model
 
-import "gorm.io/gorm"
+import (
+	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
+	"gorm.io/gorm"
+)
 
 type User struct {
 	gorm.Model
@@ -15,5 +18,13 @@ func (user User) FromClaims(claims Claims) User {
 		ID:        claims.ID,
 		FirstName: claims.FirstName,
 		LastName:  claims.LastName,
+	}
+}
+
+func (user User) ToResponse() dto.UserResponse {
+	return dto.UserResponse{
+		ID:        user.ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 	}
 }

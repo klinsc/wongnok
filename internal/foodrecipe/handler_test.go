@@ -46,6 +46,9 @@ type HandlerCreateTestSuite struct {
 	respServiceCreate model.FoodRecipe
 	errServiceCreate  error
 
+	// Claims
+	claims model.Claims
+
 	// Helper
 	server func(payload io.Reader) *httptest.ResponseRecorder
 }
@@ -62,9 +65,19 @@ func (suite *HandlerCreateTestSuite) SetupTest() {
 		Service: suite.service,
 	}
 
+	suite.claims = model.Claims{
+		ID: "user-id",
+	}
+
 	suite.server = func(payload io.Reader) *httptest.ResponseRecorder {
 		// Create router
 		router := gin.Default()
+
+		// Set context
+		router.Use(func(ctx *gin.Context) {
+			ctx.Set("claims", suite.claims)
+		})
+
 		router.POST("/api/v1/food-recipes", suite.handler.Create)
 
 		// Recorder
@@ -89,7 +102,7 @@ func (suite *HandlerCreateTestSuite) SetupTest() {
 	}
 	suite.errServiceCreate = nil
 
-	suite.service.On("Create", mock.Anything).Return(func(dto.FoodRecipeRequest) (model.FoodRecipe, error) {
+	suite.service.On("Create", mock.Anything, mock.Anything).Return(func(dto.FoodRecipeRequest, model.Claims) (model.FoodRecipe, error) {
 		return suite.respServiceCreate, suite.errServiceCreate
 	})
 }
@@ -113,7 +126,7 @@ func (suite *HandlerCreateTestSuite) TestResponseRecipeWithStatusCode201() {
 	suite.Equal(string(expectedJson), response.Body.String())
 	suite.service.AssertCalled(suite.T(), "Create", dto.FoodRecipeRequest{
 		Name: "Name",
-	})
+	}, suite.claims)
 }
 
 func (suite *HandlerCreateTestSuite) TestErrorWhenRequestInvalid() {

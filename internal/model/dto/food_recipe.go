@@ -27,6 +27,7 @@ type FoodRecipeResponse struct {
 	CreatedAt       time.Time               `json:"createdAt"`
 	UpdatedAt       time.Time               `json:"updatedAt"`
 	AverageRating   float64                 `json:"averageRating"` // new
+	User            UserResponse            `json:"user"`          // new, user who created the recipe
 }
 
 // type FoodRecipesResponse dto.BaseListResponse[[]FoodRecipeResponse]

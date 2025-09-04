@@ -95,7 +95,7 @@ func main() {
 		},
 		provider.Verifier(&oidc.Config{ClientID: conf.Keycloak.ClientID}),
 	)
-	userHandler := user.NewHandler()
+	userHandler := user.NewHandler(db)
 
 	// Router
 	router := gin.Default()
@@ -113,10 +113,10 @@ func main() {
 	group := router.Group("/api/v1")
 	group.GET("/food-recipes", foodRecipeHandler.Get)
 	group.GET("/food-recipes/:id", foodRecipeHandler.GetByID)
-	group.POST("/food-recipes", foodRecipeHandler.Create)
-	group.PUT("/food-recipes/:id", foodRecipeHandler.Update)
-	group.DELETE("/food-recipes/:id", foodRecipeHandler.Delete)
-	group.POST("/food-recipes/:id/ratings", ratingHandler.Create)
+	group.POST("/food-recipes", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Create)
+	group.PUT("/food-recipes/:id", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Update)
+	group.DELETE("/food-recipes/:id", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Delete)
+	group.POST("/food-recipes/:id/ratings", middleware.Authorize(verifierSkipClientCheck), ratingHandler.Create)
 	group.GET("/food-recipes/:id/ratings", ratingHandler.GetByID)
 
 	// Auth
@@ -125,7 +125,7 @@ func main() {
 	group.GET("/logout", authHandler.Logout)
 
 	// User
-	group.GET("/users/:id", middleware.Authorize(verifierSkipClientCheck), userHandler.GetRecipes)
+	group.GET("/users/:id/food-recipes", middleware.Authorize(verifierSkipClientCheck), userHandler.GetRecipes)
 
 	if err := router.Run(); err != nil {
 		log.Fatal("Server error:", err)

@@ -18,6 +18,8 @@ type FoodRecipe struct {
 	Difficulty        Difficulty
 	Ratings           Ratings // new
 	AverageRating     float64 `gorm:"-"` // new
+	UserID            string  // new, user who created the recipe
+	User              User    // new, relationship to User
 }
 
 type FoodRecipeQuery struct {
@@ -26,7 +28,7 @@ type FoodRecipeQuery struct {
 	Limit  int    `form:"limit" binding:"required,min=1"` // number of items per page
 }
 
-func (recipe FoodRecipe) FromRequest(request dto.FoodRecipeRequest) FoodRecipe {
+func (recipe FoodRecipe) FromRequest(request dto.FoodRecipeRequest, claims Claims) FoodRecipe {
 	return FoodRecipe{
 		Name:              request.Name,
 		Description:       request.Description,
@@ -35,6 +37,7 @@ func (recipe FoodRecipe) FromRequest(request dto.FoodRecipeRequest) FoodRecipe {
 		ImageURL:          request.ImageURL,
 		CookingDurationID: request.CookingDurationID,
 		DifficultyID:      request.DifficultyID,
+		UserID:            claims.ID, // new, set the user ID from claims
 	}
 }
 
@@ -57,6 +60,8 @@ func (recipe FoodRecipe) ToResponse() dto.FoodRecipeResponse {
 		CreatedAt:     recipe.CreatedAt,
 		UpdatedAt:     recipe.UpdatedAt,
 		AverageRating: recipe.AverageRating, // new
+
+		User: recipe.User.ToResponse(), // new, user who created the recipe
 	}
 }
 

@@ -210,3 +210,47 @@ func (suite *RepositoryGetByIDTestSuite) TestErrorWhenRecipeNotFound() {
 func TestRepositoryGetByID(t *testing.T) {
 	suite.Run(t, new(RepositoryGetByIDTestSuite))
 }
+
+// Extend
+type RepositoryUpdateTestSuite struct {
+	RepositoryTestSuite
+	recipe model.FoodRecipe
+}
+
+func (suite *RepositoryUpdateTestSuite) SetupTest() {
+	// Super
+	suite.RepositoryTestSuite.SetupTest()
+
+	suite.recipe = model.FoodRecipe{
+		Name:              "Name",
+		Description:       "Description",
+		Ingredient:        "Ingredient",
+		Instruction:       "Instruction",
+		CookingDurationID: 1,
+		DifficultyID:      1,
+		UserID:            "38fa4e9e-27de-42d5-a70f-9f01d41f32c2",
+	}
+
+	err := suite.db.Create(&suite.recipe).Error
+	suite.NoError(err)
+}
+
+func (suite *RepositoryUpdateTestSuite) TestUpdateRecipe() {
+	suite.recipe = model.FoodRecipe{
+		Model: gorm.Model{ID: suite.recipe.ID},
+		Name:  "Update Name",
+	}
+
+	err := suite.repo.Update(&suite.recipe)
+	suite.NoError(err)
+
+	var result model.FoodRecipe
+	err = suite.db.First(&result, suite.recipe.ID).Error
+	suite.NoError(err)
+
+	suite.Equal("Update Name", result.Name)
+}
+
+func TestRepositoryUpdate(t *testing.T) {
+	suite.Run(t, new(RepositoryUpdateTestSuite))
+}

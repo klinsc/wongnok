@@ -6,6 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/klins/devpool/go-day6/wongnok/internal/global"
+	"github.com/klins/devpool/go-day6/wongnok/internal/helper"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model"
 	"github.com/klins/devpool/go-day6/wongnok/internal/model/dto"
 	"github.com/pkg/errors"
@@ -38,7 +40,13 @@ func (handler Handler) Create(ctx *gin.Context) {
 		return
 	}
 
-	recipe, err := handler.Service.Create(request)
+	claims, err := helper.DecodeClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	recipe, err := handler.Service.Create(request, claims)
 	if err != nil {
 		statusCode := http.StatusInternalServerError
 		if errors.As(err, &validator.ValidationErrors{}) {
@@ -115,10 +123,21 @@ func (handler Handler) Update(ctx *gin.Context) {
 		return
 	}
 
-	recipe, err := handler.Service.Update(id, request)
+	claims, err := helper.DecodeClaims(ctx)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	recipe, err := handler.Service.Update(request, id, claims)
+	if err != nil {
+		if errors.Is(err, global.ErrorNotFound) {
 			ctx.JSON(http.StatusNotFound, gin.H{"message": "Recipe not found"})
+			return
+		}
+
+		if errors.Is(err, global.ErrorForbidden) {
+			ctx.JSON(http.StatusForbidden, gin.H{"message": "You do not have permission to update this recipe"})
 			return
 		}
 
@@ -130,17 +149,29 @@ func (handler Handler) Update(ctx *gin.Context) {
 }
 
 func (handler Handler) Delete(ctx *gin.Context) {
-	var id int
+	claims, err := helper.DecodeClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	var id string
 
 	pathParam := ctx.Param("id")
 	if pathParam != "" {
 		if parsed, err := strconv.Atoi(pathParam); err == nil && parsed > 0 {
-			id = parsed
+			id = strconv.Itoa(parsed)
 		}
 	}
 
-	if err := handler.Service.Delete(id); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+	if err := handler.Service.Delete(id, claims); err != nil {
+		statusCode := http.StatusInternalServerError
+
+		if errors.Is(err, global.ErrorForbidden) {
+			statusCode = http.StatusForbidden
+		}
+
+		ctx.JSON(statusCode, gin.H{"message": err.Error()})
 		return
 	}
 

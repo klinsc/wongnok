@@ -1,3 +1,25 @@
+-- users table
+CREATE TABLE
+    IF NOT EXISTS users (
+        id VARCHAR(100) PRIMARY KEY,
+        first_name VARCHAR(100) NOT NULL,
+        last_name VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL,
+        deleted_at TIMESTAMP
+    );
+
+INSERT INTO
+    users (id, first_name, last_name, created_at, updated_at)
+VALUES
+    (
+        '38fa4e9e-27de-42d5-a70f-9f01d41f32c2',
+        'Demo',
+        'Tester',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    );
+
 -- difficulties table
 CREATE TABLE
     IF NOT EXISTS difficulties (
@@ -44,6 +66,7 @@ CREATE TABLE
         image_url TEXT NULL,
         cooking_duration_id INT NOT NULL REFERENCES cooking_durations,
         difficulty_id INT NOT NULL REFERENCES difficulties,
+        user_id VARCHAR(100) REFERENCES users, --//new
         created_at TIMESTAMP NOT NULL,
         updated_at TIMESTAMP NOT NULL,
         deleted_at TIMESTAMP
@@ -68,6 +91,42 @@ VALUES
         'Cooking',
         1,
         1,
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    );
+
+-- ratings table
+CREATE TABLE
+    IF NOT EXISTS ratings (
+        id SERIAL PRIMARY KEY,
+        food_recipe_id INT NOT NULL REFERENCES food_recipes,
+        score INT NOT NULL,
+        user_id VARCHAR(100) NOT NULL REFERENCES users,
+        created_at TIMESTAMP NOT NULL,
+        updated_at TIMESTAMP NOT NULL,
+        deleted_at TIMESTAMP
+    );
+
+INSERT INTO
+    ratings (
+        food_recipe_id,
+        score,
+        user_id,
+        created_at,
+        updated_at
+    )
+VALUES
+    (
+        1,
+        5,
+        '38fa4e9e-27de-42d5-a70f-9f01d41f32c2',
+        CURRENT_TIMESTAMP,
+        CURRENT_TIMESTAMP
+    ),
+    (
+        1,
+        3,
+        '38fa4e9e-27de-42d5-a70f-9f01d41f32c2',
         CURRENT_TIMESTAMP,
         CURRENT_TIMESTAMP
     );
