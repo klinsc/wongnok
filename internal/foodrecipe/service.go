@@ -18,6 +18,7 @@ type IService interface {
 	Get(foodRecipeQuery model.FoodRecipeQuery) (model.FoodRecipes, int64, error)
 	Count() (int64, error)
 	Delete(id string, claims model.Claims) error
+	GetFavorites(foodRecipeQuery model.FoodRecipeQuery, claims model.Claims) (model.FoodRecipes, int64, error)
 }
 
 type Service struct {
@@ -96,6 +97,14 @@ func (service Service) Count() (int64, error) {
 	return count, nil
 }
 
+func (service Service) CountFavorites(userID string) (int64, error) {
+	count, err := service.Repository.CountFavorites(userID)
+	if err != nil {
+		return 0, errors.Wrap(err, "count favorite recipes")
+	}
+	return count, nil
+}
+
 func (service Service) Update(request dto.FoodRecipeRequest, id string, claims model.Claims) (model.FoodRecipe, error) {
 	validate := validator.New()
 	if err := validate.Struct(request); err != nil {
@@ -138,4 +147,20 @@ func (service Service) Delete(id string, claims model.Claims) error {
 	}
 
 	return service.Repository.Delete(id)
+}
+
+func (service Service) GetFavorites(foodRecipeQuery model.FoodRecipeQuery, claims model.Claims) (model.FoodRecipes, int64, error) {
+	if claims.ID == "" {
+		return nil, 0, global.ErrorForbidden
+	}
+	total, err := service.Repository.CountFavorites(claims.ID)
+	if err != nil {
+		return nil, 0, err
+	}
+	results, err := service.Repository.GetFavorites(foodRecipeQuery, claims.ID)
+	if err != nil {
+		return nil, 0, err
+	}
+	results = helper.CalculateAverageRatings(results)
+	return results, total, nil
 }

@@ -112,6 +112,7 @@ func main() {
 	// Register route
 	group := router.Group("/api/v1")
 	group.GET("/food-recipes", foodRecipeHandler.Get)
+	group.GET("/food-recipes/favorites", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.GetFavorites)
 	group.GET("/food-recipes/:id", foodRecipeHandler.GetByID)
 	group.POST("/food-recipes", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Create)
 	group.PUT("/food-recipes/:id", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Update)

@@ -20,6 +20,7 @@ type IHandler interface {
 	GetByID(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
+	GetFavorites(ctx *gin.Context)
 }
 
 type Handler struct {
@@ -176,4 +177,26 @@ func (handler Handler) Delete(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "Recipe deleted successfully"})
+}
+
+func (handler Handler) GetFavorites(ctx *gin.Context) {
+	claims, err := helper.DecodeClaims(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
+		return
+	}
+
+	var foodRecipeQuery model.FoodRecipeQuery
+	if err := ctx.ShouldBindQuery(&foodRecipeQuery); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+
+	recipes, total, err := handler.Service.GetFavorites(foodRecipeQuery, claims)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"message": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, recipes.ToResponse(total))
 }
