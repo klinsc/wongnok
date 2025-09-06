@@ -11,6 +11,7 @@ type IRepository interface {
 	Upsert(user *model.User) error
 	GetRecipes(userID string) (model.FoodRecipes, error)
 	Update(user *model.User) error
+	GetMyFavorites(userID string) (model.FoodRecipes, error)
 }
 
 type Repository struct {
@@ -45,4 +46,15 @@ func (repo Repository) GetRecipes(userID string) (model.FoodRecipes, error) {
 
 func (repo Repository) Update(user *model.User) error {
 	return repo.DB.Save(user).Error
+}
+
+func (repo Repository) GetMyFavorites(userID string) (model.FoodRecipes, error) {
+	var recipes model.FoodRecipes
+	if err := repo.DB.Joins("JOIN favorites ON favorites.food_recipe_id = food_recipes.id").
+		Where("favorites.user_id = ?", userID).
+		Preload(clause.Associations).
+		Find(&recipes).Error; err != nil {
+		return nil, err
+	}
+	return recipes, nil
 }

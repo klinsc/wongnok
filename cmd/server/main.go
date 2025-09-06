@@ -118,6 +118,8 @@ func main() {
 	group.DELETE("/food-recipes/:id", middleware.Authorize(verifierSkipClientCheck), foodRecipeHandler.Delete)
 	group.POST("/food-recipes/:id/ratings", middleware.Authorize(verifierSkipClientCheck), ratingHandler.Create)
 	group.GET("/food-recipes/:id/ratings", ratingHandler.GetByID)
+	group.POST("/food-recipes/:id/favorite", middleware.Authorize(verifierSkipClientCheck), ratingHandler.Favorite)
+	group.GET("/food-recipes/:id/favorite", middleware.Authorize(verifierSkipClientCheck), ratingHandler.IsFavorite)
 
 	// Auth
 	group.GET("/login", authHandler.Login)

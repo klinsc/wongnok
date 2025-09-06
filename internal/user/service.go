@@ -14,6 +14,7 @@ type IService interface {
 	GetByID(id string) (model.User, error)
 	GetRecipes(userID string, claims model.Claims) (model.FoodRecipes, error)
 	Update(id string, request dto.UserRequest, claims model.Claims) (model.User, error)
+	GetMyFavorites(userID string) (model.FoodRecipes, error)
 }
 
 type Service struct {
@@ -92,4 +93,14 @@ func (service Service) Update(id string, request dto.UserRequest, claims model.C
 		return model.User{}, errors.Wrap(err, "update user")
 	}
 	return user, nil
+}
+
+func (service Service) GetMyFavorites(userID string) (model.FoodRecipes, error) {
+	recipes, err := service.Repository.GetMyFavorites(userID)
+	if err != nil {
+		return nil, errors.Wrap(err, "get user's favorite recipes")
+	}
+
+	return recipes, nil
+
 }

@@ -12,6 +12,9 @@ import (
 type IService interface {
 	Create(request dto.RatingRequest, recipeID int, claims model.Claims) (model.Rating, error)
 	GetByID(id int) (model.Ratings, error)
+	GetMyFavorites(claims model.Claims) (model.FoodRecipes, error)
+	IsFavorite(recipeID int, claims model.Claims) (bool, error)
+	Favorite(request dto.FavoriteRequest, recipeID int, claims model.Claims) (bool, error)
 }
 
 type Service struct {
@@ -57,4 +60,42 @@ func (service Service) GetByID(id int) (model.Ratings, error) {
 	}
 
 	return ratings, nil
+}
+
+func (service Service) GetMyFavorites(claims model.Claims) (model.FoodRecipes, error) {
+	// Verify user
+	user, err := service.IUserService.GetByID(claims.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, "get user by ID")
+	}
+	return service.IUserService.GetMyFavorites(user.ID)
+}
+
+func (service Service) IsFavorite(recipeID int, claims model.Claims) (bool, error) {
+	// Verify user
+	user, err := service.IUserService.GetByID(claims.ID)
+	if err != nil {
+		return false, errors.Wrap(err, "get user by ID")
+	}
+	return service.Repository.IsFavorite(recipeID, user.ID)
+}
+
+func (service Service) Favorite(request dto.FavoriteRequest, recipeID int, claims model.Claims) (bool, error) {
+	validate := validator.New()
+	if err := validate.Struct(request); err != nil {
+		return false, errors.Wrap(err, "request invalid")
+	}
+	// Verify user
+	user, err := service.IUserService.GetByID(claims.ID)
+	if err != nil {
+		return false, errors.Wrap(err, "get user by ID")
+	}
+
+	if *request.IsFavorited {
+		// Add to favorites
+		return service.Repository.AddFavorite(recipeID, user.ID)
+	} else {
+		// Remove from favorites
+		return service.Repository.RemoveFavorite(recipeID, user.ID)
+	}
 }
